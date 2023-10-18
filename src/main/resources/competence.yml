@@ -1,0 +1,16 @@
+competences:
+  "fly":
+    displayName: "Fly"
+    type: FLY
+    effect: ""
+    level: 1
+  "regeneration":
+    displayName: "Regénération"
+    type: EFFECT
+    effect: "regeneration"
+    level: 2
+  "heal":
+    displayName: "Soin"
+    type: EFFECT
+    effect: "instant_heal"
+    level: 1

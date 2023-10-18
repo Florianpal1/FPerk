@@ -1,0 +1,188 @@
+gui:
+  size: 45
+  name: "Perk (Page {Page}/{TotalPage})"
+competenceFormat: "- {DisplayName}"
+perk:
+  title: "&3Perk: &a{Name}"
+  description:
+    - "&3Nom: &a{Name}"
+    - "Est activé : &a{IsEnabled}"
+    - "Compétences :"
+    - "{competences}"
+block:
+  '0':
+    utility: barrier
+    material: GRAY_STAINED_GLASS_PANE
+    title: " "
+    description: {}
+  '1':
+    utility: barrier
+    material: GRAY_STAINED_GLASS_PANE
+    title: " "
+    description: {}
+  '2':
+    utility: barrier
+    material: GRAY_STAINED_GLASS_PANE
+    title: " "
+    description: {}
+  '3':
+    utility: barrier
+    material: GRAY_STAINED_GLASS_PANE
+    title: " "
+    description: {}
+  '4':
+    utility: barrier
+    material: GRAY_STAINED_GLASS_PANE
+    title: " "
+    description: {}
+  '5':
+    utility: barrier
+    material: GRAY_STAINED_GLASS_PANE
+    title: " "
+    description: {}
+  '6':
+    utility: barrier
+    material: GRAY_STAINED_GLASS_PANE
+    title: " "
+    description: {}
+  '7':
+    utility: barrier
+    material: GRAY_STAINED_GLASS_PANE
+    title: " "
+    description: {}
+  '8':
+    utility: barrier
+    material: GRAY_STAINED_GLASS_PANE
+    title: " "
+    description: {}
+  '9':
+    utility: barrier
+    material: GRAY_STAINED_GLASS_PANE
+    title: " "
+    description: {}
+  '10':
+    utility: perk
+  '11':
+    utility: perk
+  '12':
+    utility: perk
+  '13':
+    utility: perk
+  '14':
+    utility: perk
+  '15':
+    utility: perk
+  '16':
+    utility: perk
+  '17':
+    utility: barrier
+    material: GRAY_STAINED_GLASS_PANE
+    title: " "
+    description: {}
+  '18':
+    utility: barrier
+    material: GRAY_STAINED_GLASS_PANE
+    title: " "
+    description: {}
+  '19':
+    utility: perk
+  '20':
+    utility: perk
+  '21':
+    utility: perk
+  '22':
+    utility: perk
+  '23':
+    utility: perk
+  '24':
+    utility: perk
+  '25':
+    utility: perk
+  '26':
+    utility: barrier
+    material: GRAY_STAINED_GLASS_PANE
+    title: " "
+    description: {}
+  '27':
+    utility: barrier
+    material: GRAY_STAINED_GLASS_PANE
+    title: " "
+    description: {}
+  '28':
+    utility: perk
+  '29':
+    utility: perk
+  '30':
+    utility: perk
+  '31':
+    utility: perk
+  '32':
+    utility: perk
+  '33':
+    utility: perk
+  '34':
+    utility: perk
+  '35':
+    utility: barrier
+    material: GRAY_STAINED_GLASS_PANE
+    title: " "
+    description: {}
+  '36':
+    utility: barrier
+    material: GRAY_STAINED_GLASS_PANE
+    title: " "
+    description: {}
+  '37':
+    utility: barrier
+    material: GRAY_STAINED_GLASS_PANE
+    title: " "
+    description: {}
+  '38':
+    utility: barrier
+    material: AIR
+    title: " "
+    description: {}
+  '39':
+    utility: previous
+    material: ARROW
+    title: "&aPage précédente"
+    description:
+      - "&7Cliquez ici pour retourner à la page précédente"
+    replacement:
+      material: AIR
+      title: " "
+      description: {}
+  '40':
+    utility: barrier
+    material: NETHER_STAR
+    title: "&eInformations"
+    description:
+      - "&7Bienvenue dans la liste des entreprises !"
+      - "&7Survolez les différents boutons pour"
+      - "&7explorer les fonctionnalités disponibles"
+  '41':
+    utility: next
+    material: ARROW
+    title: "&aPage suivante"
+    description:
+      - "&7Cliquez ici pour aller sur la page suivante"
+    replacement:
+      material: AIR
+      title: " "
+      description: {}
+  '42':
+    utility: barrier
+    material: AIR
+    title: " "
+    description: {}
+  '43':
+    utility: barrier
+    material: AIR
+    title: " "
+    description: {}
+  '44':
+    utility: close
+    material: BARRIER
+    title: "&cFermer"
+    description:
+      - "&7Cliquez ici pour fermer le menu"

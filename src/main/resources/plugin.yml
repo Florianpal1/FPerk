@@ -1,0 +1,5 @@
+name: FPerk
+main: fr.florianpal.fperk.FPerk
+version: 1.0
+author: florianpal
+api-version: 1.16

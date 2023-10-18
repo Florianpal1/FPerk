@@ -1,0 +1,22 @@
+perks:
+  "fly":
+    displayName: "Fly"
+    material: "ELYTRA"
+    competences:
+      - "fly"
+    delais: 500 # In MilliSeconds
+    ignoreDelais: true
+    time: 500 # In MilliSeconds
+    persistant: false
+    permission: "fperk.fly"
+  "heal":
+    displayName: "Soin"
+    material: "BEACON"
+    competences:
+      - "heal"
+      - "regeneration"
+    delais: 500 # In MilliSeconds
+    ignoreDelais: true
+    time: 500 # In MilliSeconds
+    persistant: false
+    permission: "fperk.fly"
