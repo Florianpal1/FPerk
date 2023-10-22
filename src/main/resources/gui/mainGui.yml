@@ -176,10 +176,12 @@ block:
     title: " "
     description: {}
   '43':
-    utility: barrier
-    material: AIR
-    title: " "
-    description: {}
+    utility: action
+    material: TNT
+    type: RESET_ALL
+    title: "&aDésactivé toutes vos perks"
+    description:
+      - "&7Désactivé toutes vos perks"
   '44':
     utility: close
     material: BARRIER

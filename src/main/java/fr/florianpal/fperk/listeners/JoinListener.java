@@ -37,7 +37,7 @@ public class JoinListener implements Listener {
             var perks = perkConfig.getPerks();
             for(var playerPerk : playerPerks) {
                 var perk = perks.get(playerPerk.getPerk());
-                if(playerPerk.isEnabled()) {
+                if(playerPerk.isEnabled() && player.hasPermission(perk.getPermission())) {
                     if (perk.isPersistant()) {
                         for(var competence : perk.getCompetences().entrySet()) {
                             switch (competence.getValue().getType()) {
@@ -51,6 +51,12 @@ public class JoinListener implements Listener {
                                 case FLY -> {
                                     player.setFlying(true);
                                     player.setAllowFlight(true);
+                                }
+                                case KEEP_INVENTORY -> {
+                                    plugin.addKeepInventory(player.getUniqueId());
+                                }
+                                case KEEP_EXPERIENCE -> {
+                                    plugin.addKeepExperience(player.getUniqueId());
                                 }
                             }
                         }
@@ -69,6 +75,12 @@ public class JoinListener implements Listener {
                             case FLY -> {
                                 player.setFlying(false);
                                 player.setAllowFlight(false);
+                            }
+                            case KEEP_INVENTORY -> {
+                                plugin.removeKeepInventory(player.getUniqueId());
+                            }
+                            case KEEP_EXPERIENCE -> {
+                                plugin.removeKeepExperience(player.getUniqueId());
                             }
                         }
                     }

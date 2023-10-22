@@ -1,1 +1,5 @@
 lang: "fr"
+
+status:
+  activated: "&2Activé"
+  desactived: "&cDésactivé"

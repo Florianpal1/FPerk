@@ -16,20 +16,33 @@
 
 package fr.florianpal.fperk.configurations;
 
+import fr.florianpal.fperk.enums.StatusType;
 import org.bukkit.configuration.Configuration;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class GlobalConfig {
 
     private String lang = "en";
 
+    private Map<StatusType, String> status;
+
 
     public void load(Configuration config) {
-
+        status = new HashMap<>();
         lang = config.getString("lang");
+
+        status.put(StatusType.ACTIVATED, config.getString("status.activated"));
+        status.put(StatusType.DESACTIVED, config.getString("status.desactived"));
 
     }
 
     public String getLang() {
         return lang;
+    }
+
+    public Map<StatusType, String> getStatus() {
+        return status;
     }
 }

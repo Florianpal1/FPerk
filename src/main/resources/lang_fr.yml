@@ -4,6 +4,7 @@ fperk:
   reload_help_description: "&aRecharger les configurations du plugin"
 
   show_perk: "&aVous avez ouvert la liste des perks"
+  disable_all_perk: "&aVous avez désactivé toutes vos perks."
   reload: "Rechargement des configurations"
 acf-minecraft:
   invalid_world: "Ce monde n'existe pas !"

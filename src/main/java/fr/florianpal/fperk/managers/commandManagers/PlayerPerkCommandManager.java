@@ -50,4 +50,8 @@ public class PlayerPerkCommandManager {
     public void updatePlayerPerk(PlayerPerk playerPerk) {
         playerPerkQueries.updatePerk(playerPerk);
     }
+
+    public void disableAllPerk(Player player) {
+        playerPerkQueries.disableAllPerk(player);
+    }
 }

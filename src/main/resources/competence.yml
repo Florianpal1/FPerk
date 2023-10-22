@@ -14,3 +14,23 @@ competences:
     type: EFFECT
     effect: "instant_heal"
     level: 1
+  "nightvision":
+    displayName: "Vision Nocturne"
+    type: EFFECT
+    effect: "night_vision"
+    level: 1
+  "glowing":
+    displayName: "Brillance"
+    type: EFFECT
+    effect: "glowing"
+    level: 1
+  "keep_inventory":
+    displayName: "Keep Inventory"
+    type: KEEP_INVENTORY
+    effect: ""
+    level: 1
+  "keep_experience":
+    displayName: "Keep Experience"
+    type: KEEP_EXPERIENCE
+    effect: ""
+    level: 1

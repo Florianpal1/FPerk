@@ -4,6 +4,8 @@ import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
 import fr.florianpal.fperk.commands.PerkCommand;
+import fr.florianpal.fperk.listeners.DeathListener;
+import fr.florianpal.fperk.listeners.JoinListener;
 import fr.florianpal.fperk.managers.ConfigurationManager;
 import fr.florianpal.fperk.managers.DatabaseManager;
 import fr.florianpal.fperk.managers.VaultIntegrationManager;
@@ -17,6 +19,9 @@ import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
@@ -43,6 +48,10 @@ public class FPerk extends JavaPlugin {
     private DatabaseManager databaseManager;
 
     private PlayerPerkQueries playerPerkQueries;
+
+    private List<UUID> keepInventory = new ArrayList<>();
+
+    private List<UUID> keepExperience = new ArrayList<>();
 
 
     @Override
@@ -71,13 +80,14 @@ public class FPerk extends JavaPlugin {
 
         commandManager.registerCommand(new PerkCommand(this));
 
+        getServer().getPluginManager().registerEvents(new DeathListener(this), this);
+        getServer().getPluginManager().registerEvents(new JoinListener(this), this);
 
         if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new FPlaceholderExpansion(this).register();
         } else {
             Bukkit.getLogger().severe("Error : PlaceholderAPI not found !");
         }
-
     }
 
     public void createDefaultConfiguration(File actual, String defaultName) {
@@ -151,5 +161,29 @@ public class FPerk extends JavaPlugin {
 
     public PlayerPerkQueries getPlayerPerkQueries() {
         return playerPerkQueries;
+    }
+
+    public boolean isKeepInventory(UUID uuid) {
+        return keepInventory.contains(uuid);
+    }
+
+    public void addKeepInventory(UUID uuid) {
+        this.keepInventory.add(uuid);
+    }
+
+    public void removeKeepInventory(UUID uuid) {
+        this.keepInventory.remove(uuid);
+    }
+
+    public boolean isKeepExperience(UUID uuid) {
+        return keepExperience.contains(uuid);
+    }
+
+    public void addKeepExperience(UUID uuid) {
+        this.keepExperience.add(uuid);
+    }
+
+    public void removeKeepExperience(UUID uuid) {
+        this.keepExperience.remove(uuid);
     }
 }

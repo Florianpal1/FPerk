@@ -80,15 +80,7 @@ public class MainGuiConfig extends AbstractGuiConfiguration {
                         Material.valueOf(config.getString("block." + index + ".material")),
                         config.getString("block." + index + ".title"),
                         config.getStringList("block." + index + ".description"),
-                        ActionType.valueOf(config.getString("block." + index + ".type")),
-                        new Action(
-                                Integer.parseInt(index),
-                                Material.valueOf(config.getString("block." + index + ".replacement.material")),
-                                config.getString("block." + index + ".replacement.title"),
-                                config.getStringList("block." + index + ".replacement.description"),
-                                ActionType.valueOf(config.getString("block." + index + ".replacement.type"))
-                        )
-
+                        ActionType.valueOf(config.getString("block." + index + ".type"))
                 );
                 actionBlocks.add(action);
             } else if (config.getString("block." + index + ".utility").equalsIgnoreCase("barrier")) {

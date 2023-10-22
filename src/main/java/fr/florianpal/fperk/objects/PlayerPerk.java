@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.UUID;
 
 public class PlayerPerk {
-    private final int id;
+    private int id;
 
     private final UUID playerUUID;
 
@@ -24,6 +24,10 @@ public class PlayerPerk {
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public UUID getPlayerUUID() {
@@ -49,4 +53,6 @@ public class PlayerPerk {
     public void setLastEnabled(Date lastEnabled) {
         this.lastEnabled = lastEnabled;
     }
+
+
 }

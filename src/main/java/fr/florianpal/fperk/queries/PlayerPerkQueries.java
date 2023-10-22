@@ -20,6 +20,7 @@ import fr.florianpal.fperk.FPerk;
 import fr.florianpal.fperk.IDatabaseTable;
 import fr.florianpal.fperk.managers.DatabaseManager;
 import fr.florianpal.fperk.objects.PlayerPerk;
+import org.bukkit.entity.Player;
 
 import java.sql.*;
 import java.util.*;
@@ -34,6 +35,9 @@ public class PlayerPerkQueries implements IDatabaseTable {
     private static final String ADD_PERK = "INSERT INTO fperk_playerperk (playerUUID, perk, lastEnabled, isEnabled) VALUES(?,?,?,?)";
 
     private static final String UPDATE_PERK = "UPDATE fperk_playerperk SET playerUUID=?, perk=?, lastEnabled=?, isEnabled=? WHERE id=?";
+
+    private static final String DISABLE_ALL_PERK = "UPDATE fperk_playerperk SET isEnabled=? WHERE playerUUID=?";
+
     private static final String DELETE_PERK = "DELETE FROM fperk_playerperk WHERE id=?";
 
     private final DatabaseManager databaseManager;
@@ -81,6 +85,26 @@ public class PlayerPerkQueries implements IDatabaseTable {
             statement.setLong(3, playerPerk.getLastEnabled().getTime());
             statement.setBoolean(4, playerPerk.isEnabled());
             statement.setInt(5, playerPerk.getId());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void disableAllPerk(Player player) {
+        PreparedStatement statement = null;
+        try (Connection connection = databaseManager.getConnection()) {
+            statement = connection.prepareStatement(DISABLE_ALL_PERK);
+            statement.setInt(1, 0);
+            statement.setString(2, player.getUniqueId().toString());
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

@@ -20,3 +20,43 @@ perks:
     time: 500 # In MilliSeconds
     persistant: false
     permission: "fperk.fly"
+  "nightvision":
+    displayName: "Vision Nocturne"
+    material: "ENDER_EYE"
+    competences:
+      - "nightvision"
+    delais: 500 # In MilliSeconds
+    ignoreDelais: true
+    time: 500 # In MilliSeconds
+    persistant: false
+    permission: "fperk.nightvision"
+  "glowing":
+    displayName: "Brillance"
+    material: "GLOWSTONE_DUST"
+    competences:
+      - "glowing"
+    delais: 500 # In MilliSeconds
+    ignoreDelais: true
+    time: 500 # In MilliSeconds
+    persistant: false
+    permission: "fperk.glowing"
+  "keep_inventory":
+    displayName: "Keep Inventory"
+    material: "CHEST"
+    competences:
+      - "keep_inventory"
+    delais: 500 # In MilliSeconds
+    ignoreDelais: true
+    time: 500 # In MilliSeconds
+    persistant: true
+    permission: "fperk.keep_inventory"
+  "keep_experience":
+    displayName: "Keep Experience"
+    material: "EXPERIENCE_BOTTLE"
+    competences:
+      - "keep_experience"
+    delais: 500 # In MilliSeconds
+    ignoreDelais: true
+    time: 500 # In MilliSeconds
+    persistant: true
+    permission: "fperk.keep_experience"

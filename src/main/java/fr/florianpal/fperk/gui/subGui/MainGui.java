@@ -16,11 +16,15 @@
 
 package fr.florianpal.fperk.gui.subGui;
 
+import co.aikar.commands.CommandIssuer;
 import co.aikar.taskchain.TaskChain;
 import fr.florianpal.fperk.FPerk;
 import fr.florianpal.fperk.configurations.gui.MainGuiConfig;
+import fr.florianpal.fperk.enums.ActionType;
+import fr.florianpal.fperk.enums.StatusType;
 import fr.florianpal.fperk.gui.AbstractGui;
 import fr.florianpal.fperk.gui.GuiInterface;
+import fr.florianpal.fperk.languages.MessageKeys;
 import fr.florianpal.fperk.managers.commandManagers.PlayerPerkCommandManager;
 import fr.florianpal.fperk.objects.Perk;
 import fr.florianpal.fperk.objects.PlayerPerk;
@@ -34,6 +38,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.text.DecimalFormat;
@@ -62,6 +67,7 @@ public class MainGui extends AbstractGui implements GuiInterface {
     }
 
     public void initializeItems() {
+        inv.clear();
 
         if(!this.perks.isEmpty()) {
             int id = (this.mainGuiConfig.getPerkBlocks().size() * this.page) - this.mainGuiConfig.getPerkBlocks().size();
@@ -74,6 +80,8 @@ public class MainGui extends AbstractGui implements GuiInterface {
         }
         initPrevious();
         initNext(perks.size(), this.mainGuiConfig.getPerkBlocks().size());
+        initAction();
+        initBarrier();
         openInventory();
     }
 
@@ -102,9 +110,9 @@ public class MainGui extends AbstractGui implements GuiInterface {
                 }
             } else {
                 if(playerPerk.isPresent()) {
-                    desc = desc.replace("{IsEnabled}", String.valueOf(playerPerk.get().isEnabled()));
+                    desc = desc.replace("{IsEnabled}", globalConfig.getStatus().get(playerPerk.get().isEnabled() ? StatusType.ACTIVATED : StatusType.DESACTIVED));
                 } else {
-                    desc = desc.replace("{IsEnabled}", "false");
+                    desc = desc.replace("{IsEnabled}", globalConfig.getStatus().get(StatusType.DESACTIVED));
                 }
                 listDescription.add(FormatUtil.format(desc));
             }
@@ -165,6 +173,8 @@ public class MainGui extends AbstractGui implements GuiInterface {
                         var playerPerk = optionalPlayerPerk.get();
                         if(playerPerk.isEnabled()) {
                             playerPerk.setEnabled(false);
+                            playerPerks.stream().filter(p -> p.getId() == playerPerk.getId()).forEach(p -> p.setEnabled(false));
+                            playerPerkCommandManager.updatePlayerPerk(playerPerk);
                             for(var competence : perk.getCompetences().entrySet()) {
                                 switch (competence.getValue().getType()) {
                                     case EFFECT -> {
@@ -177,10 +187,18 @@ public class MainGui extends AbstractGui implements GuiInterface {
                                         player.setAllowFlight(false);
                                         player.setFlying(false);
                                     }
+                                    case KEEP_INVENTORY -> {
+                                        plugin.removeKeepInventory(playerPerk.getPlayerUUID());
+                                    }
+                                    case KEEP_EXPERIENCE -> {
+                                        plugin.removeKeepExperience(playerPerk.getPlayerUUID());
+                                    }
                                 }
                             }
                         } else {
                             playerPerk.setEnabled(true);
+                            playerPerks.stream().filter(p -> p.getId() == playerPerk.getId()).forEach(p -> p.setEnabled(true));
+                            playerPerkCommandManager.updatePlayerPerk(playerPerk);
                             for(var competence : perk.getCompetences().entrySet()) {
                                 switch (competence.getValue().getType()) {
                                     case EFFECT -> {
@@ -194,12 +212,20 @@ public class MainGui extends AbstractGui implements GuiInterface {
                                         player.setAllowFlight(true);
                                         player.setFlying(true);
                                     }
+                                    case KEEP_INVENTORY -> {
+                                        plugin.addKeepInventory(player.getUniqueId());
+                                    }
+                                    case KEEP_EXPERIENCE -> {
+                                        plugin.addKeepExperience(playerPerk.getPlayerUUID());
+                                    }
                                 }
                             }
                         }
-                        playerPerkCommandManager.updatePlayerPerk(playerPerk);
                     } else {
-                        playerPerkCommandManager.addPlayerPerk(new PlayerPerk(-1, player.getUniqueId(), perk.getId(), new Date().getTime(), true));
+                        PlayerPerk playerPerk = new PlayerPerk(-1, player.getUniqueId(), perk.getId(), new Date().getTime(), true);
+                        int id = playerPerkCommandManager.addPlayerPerk(playerPerk);
+                        playerPerk.setId(id);
+                        playerPerks.add(playerPerk);
                         for(var competence : perk.getCompetences().entrySet()) {
                             switch (competence.getValue().getType()) {
                                 case EFFECT -> {
@@ -212,6 +238,12 @@ public class MainGui extends AbstractGui implements GuiInterface {
                                 case FLY -> {
                                     player.setAllowFlight(true);
                                     player.setFlying(true);
+                                }
+                                case KEEP_INVENTORY -> {
+                                    plugin.addKeepInventory(player.getUniqueId());
+                                }
+                                case KEEP_EXPERIENCE -> {
+                                    plugin.addKeepExperience(player.getUniqueId());
                                 }
                             }
                         }
@@ -226,7 +258,15 @@ public class MainGui extends AbstractGui implements GuiInterface {
 
         for(Action action : mainGuiConfig.getActionBlocks()) {
             if (e.getRawSlot() == action.getIndex()) {
-
+                if(action.getType().equals(ActionType.RESET_ALL)) {
+                    playerPerkCommandManager.disableAllPerk(player);
+                    inv.close();
+                    for(PotionEffect potionEffect : player.getActivePotionEffects()) {
+                        player.removePotionEffect(potionEffect.getType());
+                    }
+                    CommandIssuer issuerTarget = commandManager.getCommandIssuer(player);
+                    issuerTarget.sendInfo(MessageKeys.DISABLE_ALL_PERK);
+                }
             }
         }
     }
