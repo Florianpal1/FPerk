@@ -5,4 +5,6 @@ public enum EffectType {
     KEEP_INVENTORY,
     KEEP_EXPERIENCE,
     EFFECT,
+
+    PACIFICATION
 }

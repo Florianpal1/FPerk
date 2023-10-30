@@ -4,23 +4,25 @@ import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
 import fr.florianpal.fperk.commands.PerkCommand;
+import fr.florianpal.fperk.enums.EffectType;
 import fr.florianpal.fperk.listeners.DeathListener;
 import fr.florianpal.fperk.listeners.JoinListener;
+import fr.florianpal.fperk.listeners.PlayerToggleFlightListener;
 import fr.florianpal.fperk.managers.ConfigurationManager;
 import fr.florianpal.fperk.managers.DatabaseManager;
 import fr.florianpal.fperk.managers.VaultIntegrationManager;
 import fr.florianpal.fperk.managers.commandManagers.CommandManager;
 import fr.florianpal.fperk.managers.commandManagers.PlayerPerkCommandManager;
-import fr.florianpal.fperk.objects.Perk;
 import fr.florianpal.fperk.placeholders.FPlaceholderExpansion;
 import fr.florianpal.fperk.queries.PlayerPerkQueries;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -49,9 +51,7 @@ public class FPerk extends JavaPlugin {
 
     private PlayerPerkQueries playerPerkQueries;
 
-    private List<UUID> keepInventory = new ArrayList<>();
-
-    private List<UUID> keepExperience = new ArrayList<>();
+    private Map<EffectType, List<UUID>> perkPlayer;
 
 
     @Override
@@ -82,6 +82,11 @@ public class FPerk extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new DeathListener(this), this);
         getServer().getPluginManager().registerEvents(new JoinListener(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerToggleFlightListener(this), this);
+
+        for(EffectType effectType : EffectType.values()) {
+            perkPlayer.put(effectType, new ArrayList<>());
+        }
 
         if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new FPlaceholderExpansion(this).register();
@@ -163,27 +168,21 @@ public class FPerk extends JavaPlugin {
         return playerPerkQueries;
     }
 
-    public boolean isKeepInventory(UUID uuid) {
-        return keepInventory.contains(uuid);
+    public boolean isPerkActive(UUID uuid, EffectType effectType) {
+        return this.perkPlayer.get(effectType).contains(uuid);
     }
 
-    public void addKeepInventory(UUID uuid) {
-        this.keepInventory.add(uuid);
+    public void addPerkActive(UUID uuid, EffectType effectType) {
+        this.perkPlayer.get(effectType).add(uuid);
     }
 
-    public void removeKeepInventory(UUID uuid) {
-        this.keepInventory.remove(uuid);
+    public void removePerkActive(UUID uuid, EffectType effectType) {
+        this.perkPlayer.get(effectType).remove(uuid);
     }
 
-    public boolean isKeepExperience(UUID uuid) {
-        return keepExperience.contains(uuid);
-    }
-
-    public void addKeepExperience(UUID uuid) {
-        this.keepExperience.add(uuid);
-    }
-
-    public void removeKeepExperience(UUID uuid) {
-        this.keepExperience.remove(uuid);
+    public void removeAllPerkActive(UUID uuid) {
+        for(var perk : this.perkPlayer.entrySet()) {
+            this.perkPlayer.get(perk.getKey()).remove(uuid);
+        }
     }
 }

@@ -23,6 +23,7 @@ import fr.florianpal.fperk.objects.Perk;
 import org.bukkit.configuration.Configuration;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CompetenceConfig {
@@ -33,7 +34,7 @@ public class CompetenceConfig {
         competences = new HashMap<>();
 
         for (String index : config.getConfigurationSection("competences").getKeys(false)) {
-            String displayName = config.getString("competences." + index + ".displayName");
+            List<String> displayName = config.getStringList("competences." + index + ".displayName");
             EffectType effectType = EffectType.valueOf(config.getString("competences." + index + ".type"));
             String effect = config.getString("competences." + index + ".effect");
             int level = config.getInt("competences." + index + ".level");

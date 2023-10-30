@@ -44,6 +44,8 @@ import org.bukkit.potion.PotionEffectType;
 import java.text.DecimalFormat;
 import java.util.*;
 
+import static fr.florianpal.fperk.enums.EffectType.*;
+
 public class MainGui extends AbstractGui implements GuiInterface {
 
     private final List<Perk> perks;
@@ -104,8 +106,10 @@ public class MainGui extends AbstractGui implements GuiInterface {
                 } else {
                     for(var line : perk.getCompetences().entrySet()) {
                         var format = mainGuiConfig.getCompetenceFormat();
-                        format = format.replace("{DisplayName}", line.getValue().getDisplayName());
-                        listDescription.add(FormatUtil.format(format));
+                        for(String displayName : line.getValue().getDisplayName()) {
+                            format = format.replace("{DisplayName}", displayName);
+                            listDescription.add(FormatUtil.format(format));
+                        }
                     }
                 }
             } else {
@@ -173,7 +177,7 @@ public class MainGui extends AbstractGui implements GuiInterface {
                         var playerPerk = optionalPlayerPerk.get();
                         if(playerPerk.isEnabled()) {
                             playerPerk.setEnabled(false);
-                            playerPerks.stream().filter(p -> p.getId() == playerPerk.getId()).forEach(p -> p.setEnabled(false));
+                            this.playerPerks.stream().filter(p -> p.getId() == playerPerk.getId()).forEach(p -> p.setEnabled(false));
                             playerPerkCommandManager.updatePlayerPerk(playerPerk);
                             for(var competence : perk.getCompetences().entrySet()) {
                                 switch (competence.getValue().getType()) {
@@ -186,18 +190,19 @@ public class MainGui extends AbstractGui implements GuiInterface {
                                     case FLY -> {
                                         player.setAllowFlight(false);
                                         player.setFlying(false);
+                                        plugin.removePerkActive(player.getUniqueId(), FLY);
                                     }
                                     case KEEP_INVENTORY -> {
-                                        plugin.removeKeepInventory(playerPerk.getPlayerUUID());
+                                        plugin.removePerkActive(playerPerk.getPlayerUUID(), KEEP_INVENTORY);
                                     }
                                     case KEEP_EXPERIENCE -> {
-                                        plugin.removeKeepExperience(playerPerk.getPlayerUUID());
+                                        plugin.removePerkActive(playerPerk.getPlayerUUID(), KEEP_EXPERIENCE);
                                     }
                                 }
                             }
                         } else {
                             playerPerk.setEnabled(true);
-                            playerPerks.stream().filter(p -> p.getId() == playerPerk.getId()).forEach(p -> p.setEnabled(true));
+                            this.playerPerks.stream().filter(p -> p.getId() == playerPerk.getId()).forEach(p -> p.setEnabled(true));
                             playerPerkCommandManager.updatePlayerPerk(playerPerk);
                             for(var competence : perk.getCompetences().entrySet()) {
                                 switch (competence.getValue().getType()) {
@@ -211,13 +216,15 @@ public class MainGui extends AbstractGui implements GuiInterface {
                                     case FLY -> {
                                         player.setAllowFlight(true);
                                         player.setFlying(true);
+                                        plugin.addPerkActive(player.getUniqueId(), FLY);
                                     }
                                     case KEEP_INVENTORY -> {
-                                        plugin.addKeepInventory(player.getUniqueId());
+                                        plugin.addPerkActive(player.getUniqueId(), KEEP_INVENTORY);
                                     }
                                     case KEEP_EXPERIENCE -> {
-                                        plugin.addKeepExperience(playerPerk.getPlayerUUID());
+                                        plugin.addPerkActive(player.getUniqueId(), KEEP_EXPERIENCE);
                                     }
+
                                 }
                             }
                         }
@@ -225,7 +232,7 @@ public class MainGui extends AbstractGui implements GuiInterface {
                         PlayerPerk playerPerk = new PlayerPerk(-1, player.getUniqueId(), perk.getId(), new Date().getTime(), true);
                         int id = playerPerkCommandManager.addPlayerPerk(playerPerk);
                         playerPerk.setId(id);
-                        playerPerks.add(playerPerk);
+                        this.playerPerks.add(playerPerk);
                         for(var competence : perk.getCompetences().entrySet()) {
                             switch (competence.getValue().getType()) {
                                 case EFFECT -> {
@@ -238,12 +245,13 @@ public class MainGui extends AbstractGui implements GuiInterface {
                                 case FLY -> {
                                     player.setAllowFlight(true);
                                     player.setFlying(true);
+                                    plugin.addPerkActive(player.getUniqueId(), FLY);
                                 }
                                 case KEEP_INVENTORY -> {
-                                    plugin.addKeepInventory(player.getUniqueId());
+                                    plugin.addPerkActive(player.getUniqueId(), KEEP_INVENTORY);
                                 }
                                 case KEEP_EXPERIENCE -> {
-                                    plugin.addKeepExperience(player.getUniqueId());
+                                    plugin.addPerkActive(player.getUniqueId(), KEEP_EXPERIENCE);
                                 }
                             }
                         }
@@ -264,6 +272,8 @@ public class MainGui extends AbstractGui implements GuiInterface {
                     for(PotionEffect potionEffect : player.getActivePotionEffects()) {
                         player.removePotionEffect(potionEffect.getType());
                     }
+                    plugin.removeAllPerkActive(player.getUniqueId());
+
                     CommandIssuer issuerTarget = commandManager.getCommandIssuer(player);
                     issuerTarget.sendInfo(MessageKeys.DISABLE_ALL_PERK);
                 }

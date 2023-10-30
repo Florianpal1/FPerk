@@ -22,6 +22,6 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 
 public interface GuiInterface {
-    ItemStack createGuiItem(Material material, String name, List<String> description);
+    ItemStack createGuiItem(Material material, String name, List<String> description, String texture);
     void initializeItems();
 }

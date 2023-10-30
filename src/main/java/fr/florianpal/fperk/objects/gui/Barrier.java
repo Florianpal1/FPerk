@@ -25,19 +25,24 @@ public class Barrier {
     private final Material material;
     private final String title;
     private final List<String> description;
+
+    private final String texture;
+
     private Barrier remplacement;
-    public Barrier(int index, Material material, String title, List<String> description) {
+    public Barrier(int index, Material material, String title, List<String> description, String texture) {
         this.index = index;
         this.material = material;
         this.title = title;
         this.description = description;
+        this.texture = texture;
     }
 
-    public Barrier(int index, Material material, String title, List<String> description, Barrier remplacement) {
+    public Barrier(int index, Material material, String title, List<String> description, String texture, Barrier remplacement) {
         this.index = index;
         this.material = material;
         this.title = title;
         this.description = description;
+        this.texture = texture;
         this.remplacement = remplacement;
     }
 
@@ -59,5 +64,9 @@ public class Barrier {
 
     public Barrier getRemplacement() {
         return remplacement;
+    }
+
+    public String getTexture() {
+        return texture;
     }
 }

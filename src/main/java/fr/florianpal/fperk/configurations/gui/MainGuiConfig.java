@@ -51,11 +51,13 @@ public class MainGuiConfig extends AbstractGuiConfiguration {
                         Material.valueOf(config.getString("block." + index + ".material")),
                         config.getString("block." + index + ".title"),
                         config.getStringList("block." + index + ".description"),
+                        config.getString("block." + index + ".texture", ""),
                         new Barrier(
                                 Integer.parseInt(index),
                                 Material.valueOf(config.getString("block." + index + ".replacement.material")),
                                 config.getString("block." + index + ".replacement.title"),
-                                config.getStringList("block." + index + ".replacement.description")
+                                config.getStringList("block." + index + ".replacement.description"),
+                                config.getString("block." + index + ".replacement.texture", "")
                         )
                 );
                 previousBlocks.add(barrier);
@@ -65,13 +67,14 @@ public class MainGuiConfig extends AbstractGuiConfiguration {
                         Material.valueOf(config.getString("block." + index + ".material")),
                         config.getString("block." + index + ".title"),
                         config.getStringList("block." + index + ".description"),
+                        config.getString("block." + index + ".texture", ""),
                         new Barrier(
                                 Integer.parseInt(index),
                                 Material.valueOf(config.getString("block." + index + ".replacement.material")),
                                 config.getString("block." + index + ".replacement.title"),
-                                config.getStringList("block." + index + ".replacement.description")
+                                config.getStringList("block." + index + ".replacement.description"),
+                                config.getString("block." + index + ".replacement.texture", "")
                         )
-
                 );
                 nextBlocks.add(barrier);
             } else if (config.getString("block." + index + ".utility").equalsIgnoreCase("action")) {
@@ -80,6 +83,7 @@ public class MainGuiConfig extends AbstractGuiConfiguration {
                         Material.valueOf(config.getString("block." + index + ".material")),
                         config.getString("block." + index + ".title"),
                         config.getStringList("block." + index + ".description"),
+                        config.getString("block." + index + ".texture", ""),
                         ActionType.valueOf(config.getString("block." + index + ".type"))
                 );
                 actionBlocks.add(action);
@@ -88,7 +92,8 @@ public class MainGuiConfig extends AbstractGuiConfiguration {
                         Integer.parseInt(index),
                         Material.valueOf(config.getString("block." + index + ".material")),
                         config.getString("block." + index + ".title"),
-                        config.getStringList("block." + index + ".description")
+                        config.getStringList("block." + index + ".description"),
+                        config.getString("block." + index + ".texture", "")
                 );
                 barrierBlocks.add(barrier);
             } else if (config.getString("block." + index + ".utility").equalsIgnoreCase("perk")) {
@@ -98,7 +103,8 @@ public class MainGuiConfig extends AbstractGuiConfiguration {
                         Integer.parseInt(index),
                         Material.valueOf(config.getString("block." + index + ".material")),
                         config.getString("block." + index + ".title"),
-                        config.getStringList("block." + index + ".description")
+                        config.getStringList("block." + index + ".description"),
+                        config.getString("block." + index + ".texture", "")
                 );
                 closeBlocks.add(barrier);
             }

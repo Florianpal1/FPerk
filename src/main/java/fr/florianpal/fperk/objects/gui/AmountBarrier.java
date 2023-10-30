@@ -24,8 +24,8 @@ public class AmountBarrier extends Barrier {
 
     private final int amount;
 
-    public AmountBarrier(int index, Material material, String title, List<String> description, int amount) {
-        super(index, material, title, description);
+    public AmountBarrier(int index, Material material, String title, List<String> description, String texture, int amount) {
+        super(index, material, title, description, texture);
         this.amount = amount;
     }
 

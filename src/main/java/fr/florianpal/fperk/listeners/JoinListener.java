@@ -4,15 +4,19 @@ import co.aikar.taskchain.TaskChain;
 import fr.florianpal.fperk.FPerk;
 import fr.florianpal.fperk.configurations.PerkConfig;
 import fr.florianpal.fperk.enums.EffectType;
+import fr.florianpal.fperk.managers.VaultIntegrationManager;
 import fr.florianpal.fperk.managers.commandManagers.PlayerPerkCommandManager;
 import fr.florianpal.fperk.objects.PlayerPerk;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.List;
+
+import static fr.florianpal.fperk.enums.EffectType.*;
 
 public class JoinListener implements Listener {
 
@@ -20,15 +24,18 @@ public class JoinListener implements Listener {
 
     private final PlayerPerkCommandManager playerPerkCommandManager;
 
+    private final VaultIntegrationManager vaultIntegrationManager;
+
     private final PerkConfig perkConfig;
 
     public JoinListener(FPerk plugin) {
         this.plugin = plugin;
         this.playerPerkCommandManager = plugin.getPlayerPerkCommandManager();
         this.perkConfig = plugin.getConfigurationManager().getPerkConfig();
+        this.vaultIntegrationManager = plugin.getVaultIntegrationManager();
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(PlayerJoinEvent event) {
         TaskChain<List<PlayerPerk>> chain = FPerk.newChain();
         chain.asyncFirst(() -> playerPerkCommandManager.getPlayerPerk(event.getPlayer())).sync(playerPerks -> {
@@ -49,14 +56,15 @@ public class JoinListener implements Listener {
                                     }
                                 }
                                 case FLY -> {
-                                    player.setFlying(true);
                                     player.setAllowFlight(true);
+                                    player.setFlying(true);
+                                    plugin.addPerkActive(player.getUniqueId(), FLY);
                                 }
                                 case KEEP_INVENTORY -> {
-                                    plugin.addKeepInventory(player.getUniqueId());
+                                    plugin.addPerkActive(player.getUniqueId(), KEEP_INVENTORY);
                                 }
                                 case KEEP_EXPERIENCE -> {
-                                    plugin.addKeepExperience(player.getUniqueId());
+                                    plugin.addPerkActive(player.getUniqueId(), KEEP_EXPERIENCE);
                                 }
                             }
                         }
@@ -73,14 +81,15 @@ public class JoinListener implements Listener {
                                 }
                             }
                             case FLY -> {
-                                player.setFlying(false);
                                 player.setAllowFlight(false);
+                                player.setFlying(false);
+                                plugin.removePerkActive(player.getUniqueId(), FLY);
                             }
                             case KEEP_INVENTORY -> {
-                                plugin.removeKeepInventory(player.getUniqueId());
+                                plugin.removePerkActive(player.getUniqueId(), KEEP_INVENTORY);
                             }
                             case KEEP_EXPERIENCE -> {
-                                plugin.removeKeepExperience(player.getUniqueId());
+                                plugin.removePerkActive(player.getUniqueId(), KEEP_EXPERIENCE);
                             }
                         }
                     }

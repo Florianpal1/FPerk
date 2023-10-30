@@ -2,11 +2,13 @@ package fr.florianpal.fperk.objects;
 
 import fr.florianpal.fperk.enums.EffectType;
 
+import java.util.List;
+
 public class Competence {
 
     private final String id;
 
-    private final String displayName;
+    private final List<String> displayName;
 
     private final EffectType type;
 
@@ -14,7 +16,7 @@ public class Competence {
 
     private final int level;
 
-    public Competence(String id, String displayName, EffectType type, String effect, int level) {
+    public Competence(String id, List<String> displayName, EffectType type, String effect, int level) {
         this.id = id;
         this.displayName = displayName;
         this.type = type;
@@ -26,7 +28,7 @@ public class Competence {
         return id;
     }
 
-    public String getDisplayName() {
+    public List<String> getDisplayName() {
         return displayName;
     }
 

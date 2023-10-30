@@ -16,6 +16,8 @@
 
 package fr.florianpal.fperk.gui;
 
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import fr.florianpal.fperk.FPerk;
 import fr.florianpal.fperk.configurations.AbstractGuiConfiguration;
 import fr.florianpal.fperk.configurations.GlobalConfig;
@@ -31,10 +33,14 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.UUID.randomUUID;
 
 public abstract class AbstractGui implements InventoryHolder, Listener {
     protected Inventory inv;
@@ -74,7 +80,7 @@ public abstract class AbstractGui implements InventoryHolder, Listener {
 
     protected void initBarrier() {
         for (Barrier barrier : abstractGuiConfiguration.getBarrierBlocks()) {
-            inv.setItem(barrier.getIndex(), createGuiItem(barrier.getMaterial(), barrier.getTitle(), barrier.getDescription()));
+            inv.setItem(barrier.getIndex(), createGuiItem(barrier.getMaterial(), barrier.getTitle(), barrier.getDescription(), barrier.getTexture()));
         }
     }
 
@@ -83,9 +89,9 @@ public abstract class AbstractGui implements InventoryHolder, Listener {
         this.referenceBarrier = referenceBarrier;
         for (Barrier next : abstractGuiConfiguration.getNextBlocks()) {
             if ((this.referenceBarrier * this.page) - this.referenceBarrier < this.referenceItem - this.referenceBarrier) {
-                inv.setItem(next.getIndex(), createGuiItem(next.getMaterial(), next.getTitle(), next.getDescription()));
+                inv.setItem(next.getIndex(), createGuiItem(next.getMaterial(), next.getTitle(), next.getDescription(), next.getTexture()));
             } else {
-                inv.setItem(next.getRemplacement().getIndex(), createGuiItem(next.getRemplacement().getMaterial(), next.getRemplacement().getTitle(), next.getRemplacement().getDescription()));
+                inv.setItem(next.getRemplacement().getIndex(), createGuiItem(next.getRemplacement().getMaterial(), next.getRemplacement().getTitle(), next.getRemplacement().getDescription(), next.getRemplacement().getTexture()));
             }
         }
     }
@@ -93,28 +99,55 @@ public abstract class AbstractGui implements InventoryHolder, Listener {
     protected void initPrevious() {
         for (Barrier previous : abstractGuiConfiguration.getPreviousBlocks()) {
             if (page > 1) {
-                inv.setItem(previous.getIndex(), createGuiItem(previous.getMaterial(), previous.getTitle(), previous.getDescription()));
+                inv.setItem(previous.getIndex(), createGuiItem(previous.getMaterial(), previous.getTitle(), previous.getDescription(), previous.getTexture()));
             } else {
-                inv.setItem(previous.getRemplacement().getIndex(), createGuiItem(previous.getRemplacement().getMaterial(), previous.getRemplacement().getTitle(), previous.getRemplacement().getDescription()));
+                inv.setItem(previous.getRemplacement().getIndex(), createGuiItem(previous.getRemplacement().getMaterial(), previous.getRemplacement().getTitle(), previous.getRemplacement().getDescription(), previous.getRemplacement().getTexture()));
             }
         }
     }
 
     protected void initClose() {
         for (Barrier close : abstractGuiConfiguration.getCloseBlocks()) {
-            inv.setItem(close.getIndex(), createGuiItem(close.getMaterial(), close.getTitle(), close.getDescription()));
+            inv.setItem(close.getIndex(), createGuiItem(close.getMaterial(), close.getTitle(), close.getDescription(), close.getTexture()));
         }
     }
 
     protected void initAction() {
         for (Action action  : abstractGuiConfiguration.getActionBlocks()) {
-            inv.setItem(action.getIndex(), createGuiItem(action.getMaterial(), action.getTitle(), action.getDescription()));
+            inv.setItem(action.getIndex(), createGuiItem(action.getMaterial(), action.getTitle(), action.getDescription(), action.getTexture()));
         }
     }
 
-    public ItemStack createGuiItem(Material material, String name, List<String> description) {
-        ItemStack item = new ItemStack(material, 1);
-        ItemMeta meta = item.getItemMeta();
+    public ItemStack createGuiItem(Material material, String name, List<String> description, String texture) {
+        ItemStack itemStack;
+        if (material == Material.PLAYER_HEAD) {
+            itemStack = new ItemStack(Material.PLAYER_HEAD, 1);
+            SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
+
+            GameProfile gameProfile = new GameProfile(randomUUID(), null);
+
+            Field field = null;
+            try {
+                field = skullMeta.getClass().getDeclaredField("profile");
+            } catch (NoSuchFieldException e) {
+                throw new RuntimeException(e);
+            }
+            gameProfile.getProperties().put("textures", new Property("textures", texture));
+
+            field.setAccessible(true); // We set as accessible to modify.
+            try {
+                field.set(skullMeta, gameProfile);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+
+            itemStack.setItemMeta(skullMeta);
+            itemStack.setAmount(1);
+        } else {
+            itemStack = new ItemStack(material, 1);
+        }
+
+        ItemMeta meta = itemStack.getItemMeta();
         name = FormatUtil.format(name);
         List<String> descriptions = new ArrayList<>();
         for (String desc : description) {
@@ -125,9 +158,9 @@ public abstract class AbstractGui implements InventoryHolder, Listener {
         if (meta != null) {
             meta.setDisplayName(name);
             meta.setLore(descriptions);
-            item.setItemMeta(meta);
+            itemStack.setItemMeta(meta);
         }
-        return item;
+        return itemStack;
     }
 
 

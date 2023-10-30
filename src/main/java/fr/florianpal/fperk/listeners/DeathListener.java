@@ -2,6 +2,7 @@ package fr.florianpal.fperk.listeners;
 
 import fr.florianpal.fperk.FPerk;
 import fr.florianpal.fperk.configurations.PerkConfig;
+import fr.florianpal.fperk.enums.EffectType;
 import fr.florianpal.fperk.managers.commandManagers.PlayerPerkCommandManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -24,16 +25,16 @@ public class DeathListener implements Listener {
         this.perkConfig = plugin.getConfigurationManager().getPerkConfig();
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onDeath(PlayerDeathEvent event) {
 
         UUID uuid = event.getPlayer().getUniqueId();
-        if(plugin.isKeepInventory(uuid)) {
+        if(plugin.isPerkActive(uuid, EffectType.KEEP_INVENTORY)) {
             event.setKeepInventory(true);
             event.getDrops().clear();
         }
 
-        if(plugin.isKeepExperience(uuid)) {
+        if(plugin.isPerkActive(uuid, EffectType.KEEP_EXPERIENCE)) {
             event.setKeepLevel(true);
             event.setShouldDropExperience(false);
         }

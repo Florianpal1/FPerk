@@ -12,24 +12,28 @@ public class Action {
     private final String title;
     private final List<String> description;
 
+    private final String texture;
+
     private final ActionType type;
 
     private Action remplacement;
 
-    public Action(int index, Material material, String title, List<String> description, ActionType type, Action remplacement) {
+    public Action(int index, Material material, String title, List<String> description, String texture, ActionType type, Action remplacement) {
         this.index = index;
         this.material = material;
         this.title = title;
         this.description = description;
+        this.texture = texture;
         this.type = type;
         this.remplacement = remplacement;
     }
 
-    public Action(int index, Material material, String title, List<String> description, ActionType type) {
+    public Action(int index, Material material, String title, List<String> description, String texture, ActionType type) {
         this.index = index;
         this.material = material;
         this.title = title;
         this.description = description;
+        this.texture = texture;
         this.type = type;
     }
 
@@ -55,5 +59,9 @@ public class Action {
 
     public ActionType getType() {
         return type;
+    }
+
+    public String getTexture() {
+        return texture;
     }
 }
