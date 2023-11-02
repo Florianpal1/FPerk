@@ -26,6 +26,8 @@ public enum MessageKeys implements MessageKeyProvider {
 
     DISABLE_ALL_PERK,
 
+    MAX_PERK,
+
     DATABASEERROR;
 
     private static final String PREFIX = "fperk";

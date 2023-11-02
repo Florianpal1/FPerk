@@ -16,7 +16,6 @@
 
 package fr.florianpal.fperk.configurations;
 
-import fr.florianpal.fperk.FPerk;
 import fr.florianpal.fperk.managers.ConfigurationManager;
 import fr.florianpal.fperk.objects.Competence;
 import fr.florianpal.fperk.objects.Perk;
@@ -46,6 +45,7 @@ public class PerkConfig {
             var time = config.getInt(BASE + POINT + index + POINT + "time");
             var persistant = config.getBoolean(BASE + POINT + index + POINT + "persistant");
             var permission = config.getString(BASE + POINT + index + POINT + "permission");
+            var texture = config.getString(BASE + POINT + index + POINT + "texture", "");
 
             Map<String, Competence> competenceMap = new HashMap<>();
             for(var competence : competences) {
@@ -62,8 +62,10 @@ public class PerkConfig {
                             ignoreDelais,
                             time,
                             persistant,
-                            permission
-                    ));
+                            permission,
+                            texture
+                    )
+            );
         }
     }
 

@@ -7,6 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 
 import static fr.florianpal.fperk.enums.EffectType.FLY;
+import static fr.florianpal.fperk.enums.EffectType.FLY_SPEED;
 
 public class PlayerToggleFlightListener implements Listener {
 

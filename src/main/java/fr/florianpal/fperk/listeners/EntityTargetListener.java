@@ -3,8 +3,10 @@ package fr.florianpal.fperk.listeners;
 import fr.florianpal.fperk.FPerk;
 import fr.florianpal.fperk.enums.EffectType;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityTargetEvent;
 
 import java.util.List;
@@ -12,7 +14,7 @@ import java.util.List;
 import static org.bukkit.event.entity.EntityTargetEvent.TargetReason.CLOSEST_ENTITY;
 import static org.bukkit.event.entity.EntityTargetEvent.TargetReason.CLOSEST_PLAYER;
 
-public class EntityTargetListener {
+public class EntityTargetListener implements Listener {
 
     private FPerk plugin;
 
@@ -28,6 +30,12 @@ public class EntityTargetListener {
         if (entity instanceof Player player) {
             if (plugin.isPerkActive(player.getUniqueId(), EffectType.PACIFICATION) && targetReasons.contains(event.getReason())) {
                 event.setCancelled(true);
+            }
+
+            if(event.getEntity().getType().equals(EntityType.PHANTOM)) {
+                if (plugin.isPerkActive(player.getUniqueId(), EffectType.ANTI_PHANTOM) && targetReasons.contains(event.getReason())) {
+                    event.setCancelled(true);
+                }
             }
         }
     }

@@ -37,7 +37,7 @@ public class CompetenceConfig {
             List<String> displayName = config.getStringList("competences." + index + ".displayName");
             EffectType effectType = EffectType.valueOf(config.getString("competences." + index + ".type"));
             String effect = config.getString("competences." + index + ".effect");
-            int level = config.getInt("competences." + index + ".level");
+            float level = (float) config.getDouble("competences." + index + ".level");
 
             competences.put(index, new Competence(index, displayName, effectType, effect, level));
         }

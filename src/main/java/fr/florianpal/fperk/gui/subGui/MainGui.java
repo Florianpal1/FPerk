@@ -17,7 +17,6 @@
 package fr.florianpal.fperk.gui.subGui;
 
 import co.aikar.commands.CommandIssuer;
-import co.aikar.taskchain.TaskChain;
 import fr.florianpal.fperk.FPerk;
 import fr.florianpal.fperk.configurations.gui.MainGuiConfig;
 import fr.florianpal.fperk.enums.ActionType;
@@ -25,14 +24,22 @@ import fr.florianpal.fperk.enums.StatusType;
 import fr.florianpal.fperk.gui.AbstractGui;
 import fr.florianpal.fperk.gui.GuiInterface;
 import fr.florianpal.fperk.languages.MessageKeys;
+import fr.florianpal.fperk.managers.VaultIntegrationManager;
 import fr.florianpal.fperk.managers.commandManagers.PlayerPerkCommandManager;
 import fr.florianpal.fperk.objects.Perk;
 import fr.florianpal.fperk.objects.PlayerPerk;
 import fr.florianpal.fperk.objects.gui.Action;
 import fr.florianpal.fperk.objects.gui.Barrier;
 import fr.florianpal.fperk.utils.FormatUtil;
+import net.luckperms.api.model.user.User;
+import net.luckperms.api.node.Node;
+import net.luckperms.api.node.NodeType;
+import net.luckperms.api.node.types.PermissionNode;
+import net.luckperms.api.query.QueryMode;
+import net.luckperms.api.query.QueryOptions;
+import net.luckperms.api.util.Tristate;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -56,12 +63,15 @@ public class MainGui extends AbstractGui implements GuiInterface {
 
     private final PlayerPerkCommandManager playerPerkCommandManager;
 
+    private final VaultIntegrationManager vaultIntegrationManager;
+
     public MainGui(FPerk plugin, List<Perk> perks, List<PlayerPerk> playerPerks, Player player, int page) {
         super(plugin, plugin.getConfigurationManager().getMainGuiConfig(), player, page);
         this.mainGuiConfig = plugin.getConfigurationManager().getMainGuiConfig();
         this.playerPerkCommandManager = plugin.getPlayerPerkCommandManager();
         this.perks = perks;
         this.playerPerks = playerPerks;
+        this.vaultIntegrationManager = plugin.getVaultIntegrationManager();
 
         String titleInv = mainGuiConfig.getNameGui();
         titleInv = titleInv.replace("{Page}", String.valueOf(this.page)).replace("{TotalPage}", String.valueOf(((this.perks.size() - 1) / mainGuiConfig.getPerkBlocks().size()) + 1));
@@ -71,7 +81,7 @@ public class MainGui extends AbstractGui implements GuiInterface {
     public void initializeItems() {
         inv.clear();
 
-        if(!this.perks.isEmpty()) {
+        if (!this.perks.isEmpty()) {
             int id = (this.mainGuiConfig.getPerkBlocks().size() * this.page) - this.mainGuiConfig.getPerkBlocks().size();
             for (int index : mainGuiConfig.getPerkBlocks()) {
                 int finalId = id;
@@ -80,6 +90,7 @@ public class MainGui extends AbstractGui implements GuiInterface {
                 if (id >= (perks.size())) break;
             }
         }
+        initClose();
         initPrevious();
         initNext(perks.size(), this.mainGuiConfig.getPerkBlocks().size());
         initAction();
@@ -104,16 +115,15 @@ public class MainGui extends AbstractGui implements GuiInterface {
                 if (perk.getCompetences().isEmpty()) {
                     listDescription.add(desc.replace("{competences}", ""));
                 } else {
-                    for(var line : perk.getCompetences().entrySet()) {
-                        var format = mainGuiConfig.getCompetenceFormat();
-                        for(String displayName : line.getValue().getDisplayName()) {
-                            format = format.replace("{DisplayName}", displayName);
-                            listDescription.add(FormatUtil.format(format));
+                    for (var line : perk.getCompetences().entrySet()) {
+
+                        for (String displayName : line.getValue().getDisplayName()) {
+                            listDescription.add(FormatUtil.format(displayName));
                         }
                     }
                 }
             } else {
-                if(playerPerk.isPresent()) {
+                if (playerPerk.isPresent()) {
                     desc = desc.replace("{IsEnabled}", globalConfig.getStatus().get(playerPerk.get().isEnabled() ? StatusType.ACTIVATED : StatusType.DESACTIVED));
                 } else {
                     desc = desc.replace("{IsEnabled}", globalConfig.getStatus().get(StatusType.DESACTIVED));
@@ -166,110 +176,239 @@ public class MainGui extends AbstractGui implements GuiInterface {
 
         for (Integer perkBlock : mainGuiConfig.getPerkBlocks()) {
             if (e.getRawSlot() == perkBlock) {
-                int nb0 = mainGuiConfig.getPerkBlocks().get(0);
-                int nb = ((e.getRawSlot() - nb0)) / 9;
-                Perk perk = perks.get((e.getRawSlot() - nb0) + ((this.mainGuiConfig.getPerkBlocks().size() * this.page) - this.mainGuiConfig.getPerkBlocks().size()) - nb * 2);
+                int block = e.getRawSlot();
+                int before = 0;
+                for (int i : this.mainGuiConfig.getPerkBlocks()) {
+                    if (i < block) {
+                        before = before + 1;
+                    }
+                }
 
-                TaskChain<List<PlayerPerk>> chain = FPerk.newChain();
-                chain.asyncFirst(() -> playerPerkCommandManager.getPlayerPerk(player)).sync(playerPerks -> {
-                    var optionalPlayerPerk = playerPerks.stream().filter(p -> p.getPerk().equals(perk.getId())).findFirst();
-                    if(optionalPlayerPerk.isPresent()) {
-                        var playerPerk = optionalPlayerPerk.get();
-                        if(playerPerk.isEnabled()) {
-                            playerPerk.setEnabled(false);
-                            this.playerPerks.stream().filter(p -> p.getId() == playerPerk.getId()).forEach(p -> p.setEnabled(false));
-                            playerPerkCommandManager.updatePlayerPerk(playerPerk);
-                            for(var competence : perk.getCompetences().entrySet()) {
-                                switch (competence.getValue().getType()) {
-                                    case EFFECT -> {
-                                        var potionEffectType = PotionEffectType.getByName(competence.getValue().getEffect());
-                                        if (potionEffectType != null) {
-                                            player.removePotionEffect(potionEffectType);
-                                        }
-                                    }
-                                    case FLY -> {
-                                        player.setAllowFlight(false);
-                                        player.setFlying(false);
-                                        plugin.removePerkActive(player.getUniqueId(), FLY);
-                                    }
-                                    case KEEP_INVENTORY -> {
-                                        plugin.removePerkActive(playerPerk.getPlayerUUID(), KEEP_INVENTORY);
-                                    }
-                                    case KEEP_EXPERIENCE -> {
-                                        plugin.removePerkActive(playerPerk.getPlayerUUID(), KEEP_EXPERIENCE);
-                                    }
-                                }
-                            }
-                        } else {
-                            playerPerk.setEnabled(true);
-                            this.playerPerks.stream().filter(p -> p.getId() == playerPerk.getId()).forEach(p -> p.setEnabled(true));
-                            playerPerkCommandManager.updatePlayerPerk(playerPerk);
-                            for(var competence : perk.getCompetences().entrySet()) {
-                                switch (competence.getValue().getType()) {
-                                    case EFFECT -> {
-                                        var potionEffectType = PotionEffectType.getByName(competence.getValue().getEffect());
-                                        if(potionEffectType != null) {
-                                            var potionEffect = potionEffectType.createEffect(Integer.MAX_VALUE, competence.getValue().getLevel());
-                                            player.addPotionEffect(potionEffect);
-                                        }
-                                    }
-                                    case FLY -> {
-                                        player.setAllowFlight(true);
-                                        player.setFlying(true);
-                                        plugin.addPerkActive(player.getUniqueId(), FLY);
-                                    }
-                                    case KEEP_INVENTORY -> {
-                                        plugin.addPerkActive(player.getUniqueId(), KEEP_INVENTORY);
-                                    }
-                                    case KEEP_EXPERIENCE -> {
-                                        plugin.addPerkActive(player.getUniqueId(), KEEP_EXPERIENCE);
-                                    }
+                int index = before + ((this.mainGuiConfig.getPerkBlocks().size() * this.page) - this.mainGuiConfig.getPerkBlocks().size());
+                Perk perk = perks.get(index);
 
-                                }
-                            }
-                        }
-                    } else {
-                        PlayerPerk playerPerk = new PlayerPerk(-1, player.getUniqueId(), perk.getId(), new Date().getTime(), true);
-                        int id = playerPerkCommandManager.addPlayerPerk(playerPerk);
-                        playerPerk.setId(id);
-                        this.playerPerks.add(playerPerk);
-                        for(var competence : perk.getCompetences().entrySet()) {
+                var optionalPlayerPerk = playerPerks.stream().filter(p -> p.getPerk().equals(perk.getId())).findFirst();
+                long count = this.playerPerks.stream().filter(PlayerPerk::isEnabled).count();
+
+                User user = plugin.getLuckPerms().getUserManager().getUser(player.getUniqueId());
+                String meta = user.getCachedData().getMetaData().getMetaValue("fperk.maxperk");
+                int result = -1;
+                if (meta != null) {
+                    result = Integer.parseInt(meta);
+                }
+
+                if (optionalPlayerPerk.isPresent()) {
+                    var playerPerk = optionalPlayerPerk.get();
+                    if (playerPerk.isEnabled()) {
+                        playerPerk.setEnabled(false);
+                        this.playerPerks.stream().filter(p -> p.getId() == playerPerk.getId()).forEach(p -> p.setEnabled(false));
+                        playerPerkCommandManager.updatePlayerPerk(playerPerk);
+                        for (var competence : perk.getCompetences().entrySet()) {
                             switch (competence.getValue().getType()) {
                                 case EFFECT -> {
                                     var potionEffectType = PotionEffectType.getByName(competence.getValue().getEffect());
-                                    if(potionEffectType != null) {
-                                        var potionEffect = potionEffectType.createEffect(Integer.MAX_VALUE, competence.getValue().getLevel());
-                                        player.addPotionEffect(potionEffect);
+                                    if (potionEffectType != null) {
+                                        player.removePotionEffect(potionEffectType);
                                     }
+                                }
+                                case FLY -> {
+                                    player.setAllowFlight(false);
+                                    player.setFlying(false);
+                                    plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
+                                }
+                                case FLY_SPEED -> {
+                                    player.setFlySpeed(competence.getValue().getLevel());
+                                    plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
+                                }
+                                case KEEP_INVENTORY, KEEP_EXPERIENCE, HARVEST, PACIFICATION, ANTI_PHANTOM, AUTO_SMELT, ANTI_KNOCKBACK -> plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
+                            }
+                        }
+                    } else {
+                        if (result <= count) {
+                            CommandIssuer issuerTarget = commandManager.getCommandIssuer(player);
+                            issuerTarget.sendInfo(MessageKeys.MAX_PERK);
+                            return;
+                        }
+
+                        playerPerk.setEnabled(true);
+                        this.playerPerks.stream().filter(p -> p.getId() == playerPerk.getId()).forEach(p -> p.setEnabled(true));
+                        playerPerkCommandManager.updatePlayerPerk(playerPerk);
+                        for (var competence : perk.getCompetences().entrySet()) {
+                            switch (competence.getValue().getType()) {
+                                case EFFECT -> {
+
+                                    var potionEffectType = PotionEffectType.getByName(competence.getValue().getEffect());
+                                    if (potionEffectType != null) {
+                                        player.addPotionEffect(new PotionEffect(potionEffectType, -1, (int) competence.getValue().getLevel(), false, false));
+                                    }
+                                    if (!perk.isPersistant()) {
+                                        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+
+                                            playerPerk.setEnabled(false);
+                                            if (potionEffectType != null) {
+                                                player.removePotionEffect(potionEffectType);
+                                            }
+
+                                            playerPerkCommandManager.updatePlayerPerk(playerPerk);
+                                        }, perk.getTime() * 20L);
+                                    }
+
                                 }
                                 case FLY -> {
                                     player.setAllowFlight(true);
                                     player.setFlying(true);
                                     plugin.addPerkActive(player.getUniqueId(), FLY);
+                                    if (!perk.isPersistant()) {
+                                        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                                            player.setAllowFlight(false);
+                                            player.setFlying(false);
+
+                                            plugin.removePerkActive(player.getUniqueId(), FLY);
+                                            playerPerk.setEnabled(false);
+
+                                            playerPerkCommandManager.updatePlayerPerk(playerPerk);
+                                        }, perk.getTime() * 20L);
+                                    }
                                 }
-                                case KEEP_INVENTORY -> {
-                                    plugin.addPerkActive(player.getUniqueId(), KEEP_INVENTORY);
+                                case FLY_SPEED -> {
+                                    player.setFlySpeed(competence.getValue().getLevel());
+                                    plugin.addPerkActive(player.getUniqueId(), competence.getValue().getType());
+
+                                    if (!perk.isPersistant()) {
+
+                                        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                                            player.setFlySpeed(0.1F);
+
+                                            plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
+                                            playerPerk.setEnabled(false);
+                                            playerPerkCommandManager.updatePlayerPerk(playerPerk);
+                                        }, perk.getTime() * 20L);
+                                    }
                                 }
-                                case KEEP_EXPERIENCE -> {
-                                    plugin.addPerkActive(player.getUniqueId(), KEEP_EXPERIENCE);
+                                case CURE_EFFECT -> {
+                                    player.removePotionEffect(PotionEffectType.BLINDNESS);
+                                    player.removePotionEffect(PotionEffectType.CONFUSION);
+                                    player.removePotionEffect(PotionEffectType.HARM);
+                                    player.removePotionEffect(PotionEffectType.POISON);
+                                    player.removePotionEffect(PotionEffectType.SLOW);
+                                    player.removePotionEffect(PotionEffectType.SLOW_DIGGING);
+                                    player.removePotionEffect(PotionEffectType.WEAKNESS);
+                                    player.removePotionEffect(PotionEffectType.WITHER);
+                                    this.playerPerks.stream().filter(p -> p.getId() == playerPerk.getId()).forEach(p -> p.setEnabled(false));
+                                    playerPerk.setEnabled(false);
+                                }
+                                case KEEP_INVENTORY, ANTI_PHANTOM, PACIFICATION, HARVEST, KEEP_EXPERIENCE, AUTO_SMELT, ANTI_KNOCKBACK -> {
+
+                                    plugin.addPerkActive(player.getUniqueId(), competence.getValue().getType());
+                                    if (!perk.isPersistant()) {
+                                        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                                            plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
+                                            playerPerk.setEnabled(false);
+                                            playerPerkCommandManager.updatePlayerPerk(playerPerk);
+                                        }, perk.getTime() * 20L);
+                                    }
                                 }
                             }
                         }
                     }
-                    initializeItems();
-                    return false;
-                }).execute();
+                } else {
+                    if (result <= count) {
+                        CommandIssuer issuerTarget = commandManager.getCommandIssuer(player);
+                        issuerTarget.sendInfo(MessageKeys.MAX_PERK);
+                        return;
+                    }
 
+                    PlayerPerk playerPerk = new PlayerPerk(-1, player.getUniqueId(), perk.getId(), new Date().getTime(), true);
+                    int id = playerPerkCommandManager.addPlayerPerk(playerPerk);
+                    playerPerk.setId(id);
+                    this.playerPerks.add(playerPerk);
+                    for (var competence : perk.getCompetences().entrySet()) {
+                        switch (competence.getValue().getType()) {
+                            case EFFECT -> {
+                                var potionEffectType = PotionEffectType.getByName(competence.getValue().getEffect());
+                                if (potionEffectType != null) {
+                                    player.addPotionEffect(new PotionEffect(potionEffectType, -1, (int) competence.getValue().getLevel(), false, false));
+                                }
+
+                                if (!perk.isPersistant()) {
+                                    Bukkit.getScheduler().runTaskLater(plugin, () -> {
+
+                                        playerPerk.setEnabled(false);
+                                        if (potionEffectType != null) {
+                                            player.removePotionEffect(potionEffectType);
+                                        }
+
+                                        playerPerkCommandManager.updatePlayerPerk(playerPerk);
+                                    }, perk.getTime() * 20L);
+                                }
+                            }
+                            case CURE_EFFECT -> {
+                                player.removePotionEffect(PotionEffectType.BLINDNESS);
+                                player.removePotionEffect(PotionEffectType.CONFUSION);
+                                player.removePotionEffect(PotionEffectType.HARM);
+                                player.removePotionEffect(PotionEffectType.POISON);
+                                player.removePotionEffect(PotionEffectType.SLOW);
+                                player.removePotionEffect(PotionEffectType.SLOW_DIGGING);
+                                player.removePotionEffect(PotionEffectType.WEAKNESS);
+                                player.removePotionEffect(PotionEffectType.WITHER);
+                                playerPerk.setEnabled(false);
+                            }
+                            case FLY -> {
+                                player.setAllowFlight(true);
+                                player.setFlying(true);
+                                plugin.addPerkActive(player.getUniqueId(), FLY);
+
+                                if (!perk.isPersistant()) {
+                                    Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                                        player.setAllowFlight(false);
+                                        player.setFlying(false);
+
+                                        plugin.removePerkActive(player.getUniqueId(), FLY);
+                                        playerPerk.setEnabled(false);
+
+                                        playerPerkCommandManager.updatePlayerPerk(playerPerk);
+                                    }, perk.getTime() * 20L);
+                                }
+                            }
+                            case FLY_SPEED -> {
+                                player.setFlySpeed(competence.getValue().getLevel());
+                                plugin.addPerkActive(player.getUniqueId(), competence.getValue().getType());
+
+                                if (!perk.isPersistant()) {
+
+                                    Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                                        player.setFlySpeed(0.1F);
+
+                                        plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
+                                        playerPerk.setEnabled(false);
+                                        playerPerkCommandManager.updatePlayerPerk(playerPerk);
+                                    }, perk.getTime() * 20L);
+                                }
+                            }
+                            case KEEP_INVENTORY, PACIFICATION, KEEP_EXPERIENCE, HARVEST, ANTI_PHANTOM, AUTO_SMELT, ANTI_KNOCKBACK -> {
+                                plugin.addPerkActive(player.getUniqueId(), competence.getValue().getType());
+                                if (!perk.isPersistant()) {
+                                    Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                                        plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
+                                        playerPerk.setEnabled(false);
+                                        playerPerkCommandManager.updatePlayerPerk(playerPerk);
+                                    }, perk.getTime() * 20L);
+                                }
+                            }
+                        }
+                    }
+                }
+                initializeItems();
                 return;
             }
         }
 
-        for(Action action : mainGuiConfig.getActionBlocks()) {
+        for (Action action : mainGuiConfig.getActionBlocks()) {
             if (e.getRawSlot() == action.getIndex()) {
-                if(action.getType().equals(ActionType.RESET_ALL)) {
+                if (action.getType().equals(ActionType.RESET_ALL)) {
                     playerPerkCommandManager.disableAllPerk(player);
                     inv.close();
-                    for(PotionEffect potionEffect : player.getActivePotionEffects()) {
+                    for (PotionEffect potionEffect : player.getActivePotionEffects()) {
                         player.removePotionEffect(potionEffect.getType());
                     }
                     plugin.removeAllPerkActive(player.getUniqueId());

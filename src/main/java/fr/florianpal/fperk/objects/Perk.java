@@ -1,9 +1,15 @@
 package fr.florianpal.fperk.objects;
 
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 
+import java.lang.reflect.Field;
 import java.util.Map;
+
+import static java.util.UUID.randomUUID;
 
 public class Perk {
 
@@ -25,7 +31,9 @@ public class Perk {
 
     private final String permission;
 
-    public Perk(String id, String displayName, Material material, Map<String, Competence> competences, int delais, boolean ignoreDelais, int time, boolean persistant, String permission) {
+    private final String texture;
+
+    public Perk(String id, String displayName, Material material, Map<String, Competence> competences, int delais, boolean ignoreDelais, int time, boolean persistant, String permission, String texture) {
         this.id = id;
         this.displayName = displayName;
         this.material = material;
@@ -35,11 +43,38 @@ public class Perk {
         this.time = time;
         this.persistant = persistant;
         this.permission = permission;
-
+        this.texture = texture;
     }
 
     public ItemStack getItemStack() {
-        return new ItemStack(material);
+        ItemStack itemStack;
+        if (material == Material.PLAYER_HEAD) {
+            itemStack = new ItemStack(Material.PLAYER_HEAD, 1);
+            SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
+
+            GameProfile gameProfile = new GameProfile(randomUUID(), null);
+
+            Field field = null;
+            try {
+                field = skullMeta.getClass().getDeclaredField("profile");
+            } catch (NoSuchFieldException e) {
+                throw new RuntimeException(e);
+            }
+            gameProfile.getProperties().put("textures", new Property("textures", texture));
+
+            field.setAccessible(true); // We set as accessible to modify.
+            try {
+                field.set(skullMeta, gameProfile);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+
+            itemStack.setItemMeta(skullMeta);
+            itemStack.setAmount(1);
+        } else {
+            itemStack = new ItemStack(material, 1);
+        }
+        return itemStack;
     }
 
     public String getId() {

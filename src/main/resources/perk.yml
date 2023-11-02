@@ -60,3 +60,33 @@ perks:
     time: 500 # In MilliSeconds
     persistant: true
     permission: "fperk.keep_experience"
+  "harvest":
+    displayName: "Harvest"
+    material: "EXPERIENCE_BOTTLE"
+    competences:
+      - "harvest"
+    delais: 500 # In MilliSeconds
+    ignoreDelais: true
+    time: 500 # In MilliSeconds
+    persistant: true
+    permission: "fperk.harvest"
+  "auto_smelt":
+    displayName: "Auto Smelt"
+    material: "IRON_INGOT"
+    competences:
+      - "auto_smelt"
+    delais: 500 # In MilliSeconds
+    ignoreDelais: true
+    time: 500 # In MilliSeconds
+    persistant: true
+    permission: "fperk.autosmelt"
+  "auto_knockback":
+    displayName: "Auto KnockBack"
+    material: "IRON_INGOT"
+    competences:
+      - "auto_knockback"
+    delais: 500 # In MilliSeconds
+    ignoreDelais: true
+    time: 500 # In MilliSeconds
+    persistant: true
+    permission: "fperk.antiknockback"

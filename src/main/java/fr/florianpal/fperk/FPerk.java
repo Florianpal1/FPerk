@@ -5,9 +5,7 @@ import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
 import fr.florianpal.fperk.commands.PerkCommand;
 import fr.florianpal.fperk.enums.EffectType;
-import fr.florianpal.fperk.listeners.DeathListener;
-import fr.florianpal.fperk.listeners.JoinListener;
-import fr.florianpal.fperk.listeners.PlayerToggleFlightListener;
+import fr.florianpal.fperk.listeners.*;
 import fr.florianpal.fperk.managers.ConfigurationManager;
 import fr.florianpal.fperk.managers.DatabaseManager;
 import fr.florianpal.fperk.managers.VaultIntegrationManager;
@@ -15,15 +13,13 @@ import fr.florianpal.fperk.managers.commandManagers.CommandManager;
 import fr.florianpal.fperk.managers.commandManagers.PlayerPerkCommandManager;
 import fr.florianpal.fperk.placeholders.FPlaceholderExpansion;
 import fr.florianpal.fperk.queries.PlayerPerkQueries;
+import net.luckperms.api.LuckPerms;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
@@ -51,7 +47,9 @@ public class FPerk extends JavaPlugin {
 
     private PlayerPerkQueries playerPerkQueries;
 
-    private Map<EffectType, List<UUID>> perkPlayer;
+    private final Map<EffectType, List<UUID>> perkPlayer = new HashMap<>();
+
+    private LuckPerms luckPerms;
 
 
     @Override
@@ -83,6 +81,14 @@ public class FPerk extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new DeathListener(this), this);
         getServer().getPluginManager().registerEvents(new JoinListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerToggleFlightListener(this), this);
+        getServer().getPluginManager().registerEvents(new EntityTargetListener(this), this);
+        getServer().getPluginManager().registerEvents(new BlockBreakListener(this), this);
+        getServer().getPluginManager().registerEvents(new EntityDamageByEntityListener(this), this);
+
+        RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
+        if (provider != null) {
+            luckPerms = provider.getProvider();
+        }
 
         for(EffectType effectType : EffectType.values()) {
             perkPlayer.put(effectType, new ArrayList<>());
@@ -184,5 +190,9 @@ public class FPerk extends JavaPlugin {
         for(var perk : this.perkPlayer.entrySet()) {
             this.perkPlayer.get(perk.getKey()).remove(uuid);
         }
+    }
+
+    public LuckPerms getLuckPerms() {
+        return luckPerms;
     }
 }

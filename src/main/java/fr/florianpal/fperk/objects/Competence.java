@@ -14,9 +14,9 @@ public class Competence {
 
     private final String effect;
 
-    private final int level;
+    private final float level;
 
-    public Competence(String id, List<String> displayName, EffectType type, String effect, int level) {
+    public Competence(String id, List<String> displayName, EffectType type, String effect, float level) {
         this.id = id;
         this.displayName = displayName;
         this.type = type;
@@ -40,7 +40,7 @@ public class Competence {
         return effect;
     }
 
-    public int getLevel() {
+    public float getLevel() {
         return level;
     }
 }
