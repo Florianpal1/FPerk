@@ -18,7 +18,6 @@ package fr.florianpal.fperk.managers.commandManagers;
 
 
 import fr.florianpal.fperk.FPerk;
-import fr.florianpal.fperk.configurations.GlobalConfig;
 import fr.florianpal.fperk.objects.PlayerPerk;
 import fr.florianpal.fperk.queries.PlayerPerkQueries;
 import org.bukkit.entity.Player;
@@ -27,16 +26,10 @@ import java.util.List;
 
 public class PlayerPerkCommandManager {
 
-    private final FPerk plugin;
-
     private final PlayerPerkQueries playerPerkQueries;
 
-    private final GlobalConfig globalConfig;
-
     public PlayerPerkCommandManager(FPerk plugin) {
-        this.plugin = plugin;
         this.playerPerkQueries = plugin.getPlayerPerkQueries();
-        this.globalConfig = plugin.getConfigurationManager().getGlobalConfig();
     }
 
     public List<PlayerPerk> getPlayerPerk(Player player) {

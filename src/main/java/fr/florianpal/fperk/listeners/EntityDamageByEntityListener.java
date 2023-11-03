@@ -2,7 +2,6 @@ package fr.florianpal.fperk.listeners;
 
 import fr.florianpal.fperk.FPerk;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,7 +13,7 @@ import static fr.florianpal.fperk.enums.EffectType.ANTI_KNOCKBACK;
 
 public class EntityDamageByEntityListener implements Listener {
 
-    private FPerk plugin;
+    private final FPerk plugin;
 
     public EntityDamageByEntityListener(FPerk plugin) {
         this.plugin = plugin;

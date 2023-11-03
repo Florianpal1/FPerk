@@ -59,3 +59,9 @@ competences:
     type: ANTI_KNOCKBACK
     effect: ""
     level: 1
+  "aspirator":
+    displayName:
+      - "aspirator"
+    type: ASPIRATOR
+    effect: ""
+    level: 1

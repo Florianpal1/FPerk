@@ -90,3 +90,13 @@ perks:
     time: 500 # In MilliSeconds
     persistant: true
     permission: "fperk.antiknockback"
+  "aspirator":
+    displayName: "Aspirator"
+    material: "ENDER_PEARL"
+    competences:
+      - "aspirator"
+    delais: 500 # In MilliSeconds
+    ignoreDelais: true
+    time: 500 # In MilliSeconds
+    persistant: true
+    permission: "fperk.aspirator"

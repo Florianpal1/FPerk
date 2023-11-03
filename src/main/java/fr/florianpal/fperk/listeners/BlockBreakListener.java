@@ -6,16 +6,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.Ageable;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.List;
 import java.util.Map;
 
 public class BlockBreakListener implements Listener {
@@ -47,18 +43,14 @@ public class BlockBreakListener implements Listener {
         Player player = event.getPlayer();
         Block block = event.getBlock();
 
-        if (plugin.isPerkActive(player.getUniqueId(), EffectType.HARVEST)) {
-
-            if (!isFarmable(block)) {
+        if (plugin.isPerkActive(player.getUniqueId(), EffectType.HARVEST) && (!isFarmable(block))) {
                 Material seedBlockType = getSeedBlockType(block.getType());
                 Material seedItemType = getSeedItemType(block.getType());
-                if (seedBlockType == null || seedItemType == null) {
-                    if (hasSeed(player, seedItemType)) {
+                if ((seedBlockType == null || seedItemType == null) && (hasSeed(player, seedItemType))) {
                         deductSeed(player, seedItemType);
                         plant(plugin, block, seedBlockType);
-                    }
                 }
-            }
+
         }
 
         if(plugin.isPerkActive(player.getUniqueId(), EffectType.AUTO_SMELT)) {

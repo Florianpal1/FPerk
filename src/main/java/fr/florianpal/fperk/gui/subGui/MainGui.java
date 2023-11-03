@@ -24,7 +24,6 @@ import fr.florianpal.fperk.enums.StatusType;
 import fr.florianpal.fperk.gui.AbstractGui;
 import fr.florianpal.fperk.gui.GuiInterface;
 import fr.florianpal.fperk.languages.MessageKeys;
-import fr.florianpal.fperk.managers.VaultIntegrationManager;
 import fr.florianpal.fperk.managers.commandManagers.PlayerPerkCommandManager;
 import fr.florianpal.fperk.objects.Perk;
 import fr.florianpal.fperk.objects.PlayerPerk;
@@ -32,12 +31,6 @@ import fr.florianpal.fperk.objects.gui.Action;
 import fr.florianpal.fperk.objects.gui.Barrier;
 import fr.florianpal.fperk.utils.FormatUtil;
 import net.luckperms.api.model.user.User;
-import net.luckperms.api.node.Node;
-import net.luckperms.api.node.NodeType;
-import net.luckperms.api.node.types.PermissionNode;
-import net.luckperms.api.query.QueryMode;
-import net.luckperms.api.query.QueryOptions;
-import net.luckperms.api.util.Tristate;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -49,9 +42,12 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
-import static fr.florianpal.fperk.enums.EffectType.*;
+import static fr.florianpal.fperk.enums.EffectType.FLY;
 
 public class MainGui extends AbstractGui implements GuiInterface {
 
@@ -63,15 +59,12 @@ public class MainGui extends AbstractGui implements GuiInterface {
 
     private final PlayerPerkCommandManager playerPerkCommandManager;
 
-    private final VaultIntegrationManager vaultIntegrationManager;
-
     public MainGui(FPerk plugin, List<Perk> perks, List<PlayerPerk> playerPerks, Player player, int page) {
         super(plugin, plugin.getConfigurationManager().getMainGuiConfig(), player, page);
         this.mainGuiConfig = plugin.getConfigurationManager().getMainGuiConfig();
         this.playerPerkCommandManager = plugin.getPlayerPerkCommandManager();
         this.perks = perks;
         this.playerPerks = playerPerks;
-        this.vaultIntegrationManager = plugin.getVaultIntegrationManager();
 
         String titleInv = mainGuiConfig.getNameGui();
         titleInv = titleInv.replace("{Page}", String.valueOf(this.page)).replace("{TotalPage}", String.valueOf(((this.perks.size() - 1) / mainGuiConfig.getPerkBlocks().size()) + 1));
@@ -214,14 +207,10 @@ public class MainGui extends AbstractGui implements GuiInterface {
                                 case FLY -> {
                                     player.setAllowFlight(false);
                                     player.setFlying(false);
-                                    plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
                                 }
-                                case FLY_SPEED -> {
-                                    player.setFlySpeed(competence.getValue().getLevel());
-                                    plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
-                                }
-                                case KEEP_INVENTORY, KEEP_EXPERIENCE, HARVEST, PACIFICATION, ANTI_PHANTOM, AUTO_SMELT, ANTI_KNOCKBACK -> plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
+                                case FLY_SPEED -> player.setFlySpeed(competence.getValue().getLevel());
                             }
+                            plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
                         }
                     } else {
                         if (result <= count) {
@@ -297,7 +286,7 @@ public class MainGui extends AbstractGui implements GuiInterface {
                                     this.playerPerks.stream().filter(p -> p.getId() == playerPerk.getId()).forEach(p -> p.setEnabled(false));
                                     playerPerk.setEnabled(false);
                                 }
-                                case KEEP_INVENTORY, ANTI_PHANTOM, PACIFICATION, HARVEST, KEEP_EXPERIENCE, AUTO_SMELT, ANTI_KNOCKBACK -> {
+                                default -> {
 
                                     plugin.addPerkActive(player.getUniqueId(), competence.getValue().getType());
                                     if (!perk.isPersistant()) {
@@ -385,7 +374,7 @@ public class MainGui extends AbstractGui implements GuiInterface {
                                     }, perk.getTime() * 20L);
                                 }
                             }
-                            case KEEP_INVENTORY, PACIFICATION, KEEP_EXPERIENCE, HARVEST, ANTI_PHANTOM, AUTO_SMELT, ANTI_KNOCKBACK -> {
+                            default -> {
                                 plugin.addPerkActive(player.getUniqueId(), competence.getValue().getType());
                                 if (!perk.isPersistant()) {
                                     Bukkit.getScheduler().runTaskLater(plugin, () -> {

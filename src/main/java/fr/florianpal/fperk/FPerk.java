@@ -84,6 +84,7 @@ public class FPerk extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new EntityTargetListener(this), this);
         getServer().getPluginManager().registerEvents(new BlockBreakListener(this), this);
         getServer().getPluginManager().registerEvents(new EntityDamageByEntityListener(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerMoveListener(this), this);
 
         RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
         if (provider != null) {

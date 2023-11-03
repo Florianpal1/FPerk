@@ -29,9 +29,9 @@ public class PerkConfig {
 
     private Map<String, Perk> perks;
 
-    private final static String BASE = "perks";
+    private static final String BASE = "perks";
 
-    private final static String POINT = ".";
+    private static final String POINT = ".";
 
     public void load(Configuration config, ConfigurationManager configurationManager) {
         perks = new HashMap<>();

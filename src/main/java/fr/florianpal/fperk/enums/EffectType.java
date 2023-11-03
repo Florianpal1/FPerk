@@ -21,5 +21,7 @@ public enum EffectType {
 
     ANTI_KNOCKBACK,
 
-    CURE_EFFECT
+    CURE_EFFECT,
+
+    ASPIRATOR,
 }

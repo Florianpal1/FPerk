@@ -16,7 +16,7 @@ import static org.bukkit.event.entity.EntityTargetEvent.TargetReason.CLOSEST_PLA
 
 public class EntityTargetListener implements Listener {
 
-    private FPerk plugin;
+    private final FPerk plugin;
 
     List<EntityTargetEvent.TargetReason> targetReasons = List.of(CLOSEST_PLAYER, CLOSEST_ENTITY);
 
@@ -32,10 +32,8 @@ public class EntityTargetListener implements Listener {
                 event.setCancelled(true);
             }
 
-            if(event.getEntity().getType().equals(EntityType.PHANTOM)) {
-                if (plugin.isPerkActive(player.getUniqueId(), EffectType.ANTI_PHANTOM) && targetReasons.contains(event.getReason())) {
+            if(event.getEntity().getType().equals(EntityType.PHANTOM) && (plugin.isPerkActive(player.getUniqueId(), EffectType.ANTI_PHANTOM) && targetReasons.contains(event.getReason()))) {
                     event.setCancelled(true);
-                }
             }
         }
     }

@@ -3,8 +3,6 @@ package fr.florianpal.fperk.listeners;
 import co.aikar.taskchain.TaskChain;
 import fr.florianpal.fperk.FPerk;
 import fr.florianpal.fperk.configurations.PerkConfig;
-import fr.florianpal.fperk.enums.EffectType;
-import fr.florianpal.fperk.managers.VaultIntegrationManager;
 import fr.florianpal.fperk.managers.commandManagers.PlayerPerkCommandManager;
 import fr.florianpal.fperk.objects.PlayerPerk;
 import org.bukkit.Bukkit;
@@ -19,15 +17,11 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.Date;
 import java.util.List;
 
-import static fr.florianpal.fperk.enums.EffectType.*;
-
 public class JoinListener implements Listener {
 
     private final FPerk plugin;
 
     private final PlayerPerkCommandManager playerPerkCommandManager;
-
-    private final VaultIntegrationManager vaultIntegrationManager;
 
     private final PerkConfig perkConfig;
 
@@ -35,7 +29,6 @@ public class JoinListener implements Listener {
         this.plugin = plugin;
         this.playerPerkCommandManager = plugin.getPlayerPerkCommandManager();
         this.perkConfig = plugin.getConfigurationManager().getPerkConfig();
-        this.vaultIntegrationManager = plugin.getVaultIntegrationManager();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -105,9 +98,7 @@ public class JoinListener implements Listener {
                                     }
                                 }
                             }
-                            case KEEP_INVENTORY, ANTI_PHANTOM, PACIFICATION, HARVEST, KEEP_EXPERIENCE, AUTO_SMELT, ANTI_KNOCKBACK -> {
-                                plugin.addPerkActive(player.getUniqueId(), competence.getValue().getType());
-
+                            default -> {
                                 plugin.addPerkActive(player.getUniqueId(), competence.getValue().getType());
                                 if(!perk.isPersistant()) {
                                     if(secs > 0) {
@@ -143,7 +134,7 @@ public class JoinListener implements Listener {
                                 player.setFlySpeed(0.1F);
                                 plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
                             }
-                            case KEEP_INVENTORY, ANTI_PHANTOM, PACIFICATION, HARVEST, KEEP_EXPERIENCE, AUTO_SMELT, ANTI_KNOCKBACK -> plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
+                            default -> plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
                         }
                     }
 
