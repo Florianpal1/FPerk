@@ -65,3 +65,9 @@ competences:
     type: ASPIRATOR
     effect: ""
     level: 1
+    "second_chance":
+      displayName:
+        - "second chance"
+      type: SECOND_CHANCE
+      effect: ""
+      level: 1

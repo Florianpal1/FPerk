@@ -43,20 +43,21 @@ public class BlockBreakListener implements Listener {
         Player player = event.getPlayer();
         Block block = event.getBlock();
 
-        if (plugin.isPerkActive(player.getUniqueId(), EffectType.HARVEST) && (!isFarmable(block))) {
-                Material seedBlockType = getSeedBlockType(block.getType());
-                Material seedItemType = getSeedItemType(block.getType());
-                if ((seedBlockType == null || seedItemType == null) && (hasSeed(player, seedItemType))) {
-                        deductSeed(player, seedItemType);
-                        plant(plugin, block, seedBlockType);
-                }
+        if (plugin.isPerkActive(player.getUniqueId(), EffectType.HARVEST) && (isFarmable(block))) {
+            Material seedBlockType = getSeedBlockType(block.getType());
+            Material seedItemType = getSeedItemType(block.getType());
+
+            if ((seedBlockType != null && seedItemType != null) && (hasSeed(player, seedItemType))) {
+                deductSeed(player, seedItemType);
+                plant(plugin, block, seedBlockType);
+            }
 
         }
 
-        if(plugin.isPerkActive(player.getUniqueId(), EffectType.AUTO_SMELT)) {
+        if (plugin.isPerkActive(player.getUniqueId(), EffectType.AUTO_SMELT)) {
 
             Material material = getMineral(block);
-            if(material != null) {
+            if (material != null) {
                 Material ore = minerals.get(material);
                 Material ingot = ingots.get(ore);
                 int count = countMineral(block, ore);

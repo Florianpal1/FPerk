@@ -100,3 +100,13 @@ perks:
     time: 500 # In MilliSeconds
     persistant: true
     permission: "fperk.aspirator"
+  "second_chance":
+    displayName: "Seconde chance"
+    material: "TOTEM_OF_UNDYING"
+    competences:
+      - "second_chance"
+    delais: 500 # In MilliSeconds
+    ignoreDelais: true
+    time: 500 # In MilliSeconds
+    persistant: true
+    permission: "fperk.secondchance"

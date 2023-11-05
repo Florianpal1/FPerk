@@ -5,6 +5,7 @@ import fr.florianpal.fperk.FPerk;
 import fr.florianpal.fperk.configurations.PerkConfig;
 import fr.florianpal.fperk.managers.commandManagers.PlayerPerkCommandManager;
 import fr.florianpal.fperk.objects.PlayerPerk;
+import fr.florianpal.fperk.utils.EffectUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -54,24 +55,20 @@ public class JoinListener implements Listener {
                                 }
                             }
                             case FLY -> {
-                                player.setAllowFlight(true);
-                                player.setFlying(true);
+                                EffectUtils.enabledFly(player, true);
                                 plugin.addPerkActive(player.getUniqueId(), competence.getValue().getType());
 
                                 if (!perk.isPersistant()) {
                                     if (secs > 0) {
                                         Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                                            player.setAllowFlight(false);
-                                            player.setFlying(false);
-
+                                            EffectUtils.enabledFly(player, false);
                                             plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
-                                            playerPerk.setEnabled(false);
 
+                                            playerPerk.setEnabled(false);
                                             playerPerkCommandManager.updatePlayerPerk(playerPerk);
                                         }, secs * 20L);
                                     } else {
-                                        player.setAllowFlight(false);
-                                        player.setFlying(false);
+                                        EffectUtils.enabledFly(player, false);
                                         plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
                                         playerPerkCommandManager.updatePlayerPerk(playerPerk);
                                     }
@@ -84,16 +81,18 @@ public class JoinListener implements Listener {
                                 if (!perk.isPersistant()) {
                                     if (secs > 0) {
                                         Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                                            player.setFlySpeed(1);
+                                            EffectUtils.resetFlySpeed(player);
 
                                             plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
-                                            playerPerk.setEnabled(false);
 
+                                            playerPerk.setEnabled(false);
                                             playerPerkCommandManager.updatePlayerPerk(playerPerk);
                                         }, secs * 20L);
                                     } else {
-                                        player.setFlySpeed(0.1F);
+                                        EffectUtils.resetFlySpeed(player);
                                         plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
+
+                                        playerPerk.setEnabled(false);
                                         playerPerkCommandManager.updatePlayerPerk(playerPerk);
                                     }
                                 }
@@ -104,11 +103,13 @@ public class JoinListener implements Listener {
                                     if(secs > 0) {
                                         Bukkit.getScheduler().runTaskLater(plugin, () -> {
                                             plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
+
                                             playerPerk.setEnabled(false);
                                             playerPerkCommandManager.updatePlayerPerk(playerPerk);
                                         }, secs * 20L);
                                     } else {
                                         plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
+
                                         playerPerk.setEnabled(false);
                                         playerPerkCommandManager.updatePlayerPerk(playerPerk);
                                     }
@@ -126,8 +127,7 @@ public class JoinListener implements Listener {
                                 }
                             }
                             case FLY -> {
-                                player.setAllowFlight(false);
-                                player.setFlying(false);
+                                EffectUtils.enabledFly(player, false);
                                 plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
                             }
                             case FLY_SPEED -> {

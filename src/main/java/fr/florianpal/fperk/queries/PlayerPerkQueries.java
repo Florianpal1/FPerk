@@ -82,7 +82,7 @@ public class PlayerPerkQueries implements IDatabaseTable {
             statement = connection.prepareStatement(UPDATE_PERK);
             statement.setString(1, playerPerk.getPlayerUUID().toString());
             statement.setString(2, playerPerk.getPerk());
-            statement.setLong(3, playerPerk.getLastEnabled().getTime());
+            statement.setLong(3, new Date().getTime());
             statement.setBoolean(4, playerPerk.isEnabled());
             statement.setInt(5, playerPerk.getId());
             statement.executeUpdate();

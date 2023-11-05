@@ -6,7 +6,9 @@ fperk:
   show_perk: "&aVous avez ouvert la liste des perks"
   disable_all_perk: "&aVous avez désactivé toutes vos perks."
   max_perk: "&cVous avez atteint le nombre maximum de perk en simultané."
+  no_permission: "&cVous n'avez pas la perk d'activée la perk {PerkName} !"
   reload: "Rechargement des configurations"
+  delais: "&cVous devez encore attendre avant de pouvoir réactivée la perk {PerkName} !"
 acf-minecraft:
   invalid_world: "Ce monde n'existe pas !"
   you_must_be_holding_item: "Vous devez avoir un item dans votre main !"
@@ -22,8 +24,6 @@ acf-minecraft:
   location_please_specify_world: "Veuillez spécifier le monde. Exemple: <c2>world:x,y,z</c2> !"
   location_please_specify_xyz: "Merci d'indiquer au format x,y,z. Exemple: <c2>world:x,y,z</c2> !"
   location_console_not_relative: "La console ne peut pas utiliser des coordonnées relatives pour la location !"
-
-
 acf-core:
   permission_denied: "Vous n'avez pas la permission d'exécuter cette commande !"
   permission_denied_parameter: "Vous n'avez pas la permission d'effectuer cette commande."

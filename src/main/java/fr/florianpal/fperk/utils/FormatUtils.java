@@ -6,7 +6,7 @@ import org.bukkit.Material;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FormatUtil {
+public class FormatUtils {
 
     public static String format(String msg) {
         Pattern pattern = Pattern.compile("[{]#[a-fA-F0-9]{6}[}]");

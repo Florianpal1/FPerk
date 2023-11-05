@@ -24,7 +24,7 @@ import fr.florianpal.fperk.configurations.GlobalConfig;
 import fr.florianpal.fperk.managers.commandManagers.CommandManager;
 import fr.florianpal.fperk.objects.gui.Action;
 import fr.florianpal.fperk.objects.gui.Barrier;
-import fr.florianpal.fperk.utils.FormatUtil;
+import fr.florianpal.fperk.utils.FormatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -148,11 +148,11 @@ public abstract class AbstractGui implements InventoryHolder, Listener {
         }
 
         ItemMeta meta = itemStack.getItemMeta();
-        name = FormatUtil.format(name);
+        name = FormatUtils.format(name);
         List<String> descriptions = new ArrayList<>();
         for (String desc : description) {
 
-            desc = FormatUtil.format(desc);
+            desc = FormatUtils.format(desc);
             descriptions.add(desc);
         }
         if (meta != null) {

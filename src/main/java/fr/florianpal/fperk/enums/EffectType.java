@@ -23,5 +23,7 @@ public enum EffectType {
 
     CURE_EFFECT,
 
+    SECOND_CHANCE,
+
     ASPIRATOR,
 }
