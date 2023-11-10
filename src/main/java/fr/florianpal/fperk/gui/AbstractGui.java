@@ -47,6 +47,8 @@ public abstract class AbstractGui implements InventoryHolder, Listener {
 
     protected final FPerk plugin;
     protected Player player;
+
+    protected Player showPlayer;
     protected int page;
     protected final GlobalConfig globalConfig;
     protected final CommandManager commandManager;
@@ -57,9 +59,10 @@ public abstract class AbstractGui implements InventoryHolder, Listener {
 
     private int referenceBarrier = 0;
 
-    protected AbstractGui(FPerk plugin, AbstractGuiConfiguration abstractGuiConfiguration, Player player, int page) {
+    protected AbstractGui(FPerk plugin, AbstractGuiConfiguration abstractGuiConfiguration, Player player, Player showPlayer, int page) {
         this.plugin = plugin;
         this.player = player;
+        this.showPlayer = showPlayer;
         this.page = page;
         this.commandManager = plugin.getCommandManager();
         inv = null;
@@ -170,6 +173,6 @@ public abstract class AbstractGui implements InventoryHolder, Listener {
     }
 
     protected void openInventory() {
-        player.openInventory(inv);
+        showPlayer.openInventory(inv);
     }
 }

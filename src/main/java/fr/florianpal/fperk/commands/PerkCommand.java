@@ -28,6 +28,8 @@ import fr.florianpal.fperk.languages.MessageKeys;
 import fr.florianpal.fperk.managers.commandManagers.CommandManager;
 import fr.florianpal.fperk.managers.commandManagers.PlayerPerkCommandManager;
 import fr.florianpal.fperk.objects.Perk;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -57,7 +59,7 @@ public class PerkCommand extends BaseCommand {
     public void onShowPerk(Player playerSender) {
         TaskChain<Perk> chain = FPerk.newChain();
         chain.asyncFirst(() -> playerPerkCommandManager.getPlayerPerk(playerSender)).sync(playerPerks -> {
-            MainGui mainGui = new MainGui(plugin, perkConfig.getPerks().values().stream().toList(), playerPerks, playerSender, 1);
+            MainGui mainGui = new MainGui(plugin, perkConfig.getPerks().values().stream().toList(), playerPerks, playerSender, playerSender,1);
             mainGui.initializeItems();
 
             CommandIssuer issuerTarget = commandManager.getCommandIssuer(playerSender);
@@ -66,8 +68,28 @@ public class PerkCommand extends BaseCommand {
         }).execute();
     }
 
+
+    @Subcommand("admin toggle")
+    @CommandPermission("fperk.admin.toggle")
+    @Description("{@@fperk.reload_help_description}")
+    @CommandCompletion("@players")
+    public void onAdminToggle(Player playerSender, String playerName) {
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
+        if(offlinePlayer != null && offlinePlayer.isOnline()) {
+            TaskChain<Perk> chain = FPerk.newChain();
+            chain.asyncFirst(() -> playerPerkCommandManager.getPlayerPerk(offlinePlayer)).sync(playerPerks -> {
+                MainGui mainGui = new MainGui(plugin, perkConfig.getPerks().values().stream().toList(), playerPerks, offlinePlayer.getPlayer(), playerSender, 1);
+                mainGui.initializeItems();
+
+                CommandIssuer issuerTarget = commandManager.getCommandIssuer(playerSender);
+                issuerTarget.sendInfo(MessageKeys.SHOW_PERK);
+                return null;
+            }).execute();
+        }
+    }
+
     @Subcommand("admin reload")
-    @CommandPermission("fentreprise.reload")
+    @CommandPermission("fperk.admin.reload")
     @Description("{@@fperk.reload_help_description}")
     public void onReload(Player playerSender) {
         CommandIssuer issuerTarget = commandManager.getCommandIssuer(playerSender);

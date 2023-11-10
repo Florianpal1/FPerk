@@ -2,12 +2,18 @@ package fr.florianpal.fperk.utils;
 
 import fr.florianpal.fperk.FPerk;
 import fr.florianpal.fperk.enums.EffectType;
+import fr.florianpal.fperk.objects.Competence;
 import fr.florianpal.fperk.objects.Perk;
 import fr.florianpal.fperk.objects.PlayerPerk;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+
+import javax.swing.plaf.SplitPaneUI;
+
+import java.util.List;
+import java.util.Optional;
 
 import static fr.florianpal.fperk.enums.EffectType.FLY;
 
@@ -118,5 +124,32 @@ public class EffectUtils {
                 }
             }
         }
+    }
+
+    public static void checkPerk(FPerk plugin, Player player) {
+        for(var perkActive : plugin.getAllPerkActive().entrySet()) {
+            if(perkActive.getValue().contains(player.getUniqueId())) {
+                Perk perk = getPerkWithCompetence(plugin, perkActive.getKey());
+                switch (perkActive.getKey()) {
+                    case FLY -> {
+                        if (perk.isPersistant()) {
+                            EffectUtils.enabledFly(player, true);
+                            plugin.addPerkActive(player.getUniqueId(), FLY);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static Perk getPerkWithCompetence(FPerk plugin, EffectType effectType) {
+        List<Perk> perks = plugin.getConfigurationManager().getPerkConfig().getPerks().values().stream().toList();
+        for (Perk perk : perks) {
+            Optional<Competence> competence = perk.getCompetences().values().stream().filter(c -> c.getType().equals(effectType)).findFirst();
+            if (competence.isPresent()) {
+                return perk;
+            }
+        }
+        return null;
     }
 }

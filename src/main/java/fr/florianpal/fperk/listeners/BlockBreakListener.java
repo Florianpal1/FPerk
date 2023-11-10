@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -61,10 +62,42 @@ public class BlockBreakListener implements Listener {
                 Material ore = minerals.get(material);
                 Material ingot = ingots.get(ore);
                 int count = countMineral(block, ore);
+                count = applyLuck(event.getPlayer().getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS), count);
+
                 event.setDropItems(false);
                 event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(ingot, count));
             }
         }
+    }
+
+    private int applyLuck(int enchantmentLevel, int count) {
+        double d = Math.random();
+        switch (enchantmentLevel) {
+            case 1 -> {
+                if(d <= 0.33) {
+                    count = count * 2;
+                }
+            }
+            case 2 -> {
+                if(d <= 0.2) {
+                    count = count * 3;
+                } else if(d <= 0.45) {
+                    count = count * 2;
+                }
+            }
+            case 3 -> {
+                if(d <= 0.20) {
+                    count = count * 4;
+                } else if(d <= 0.4) {
+                    count = count * 3;
+                } else if(d <= 0.6) {
+                    count = count * 2;
+                }
+            }
+        }
+
+
+        return count;
     }
 
     public Material getSeedBlockType(Material crop) {

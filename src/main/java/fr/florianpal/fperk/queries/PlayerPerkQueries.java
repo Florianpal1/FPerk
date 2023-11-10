@@ -143,7 +143,7 @@ public class PlayerPerkQueries implements IDatabaseTable {
         ResultSet result = null;
         Map<UUID, List<PlayerPerk>> playerPerks = new HashMap<>();
         try (Connection connection = databaseManager.getConnection()) {
-            statement = connection.prepareStatement(GET_ALL_PERK_FROM_PLAYER);
+            statement = connection.prepareStatement(GET_ALL_PERK);
 
             result = statement.executeQuery();
 

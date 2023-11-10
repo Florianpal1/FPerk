@@ -23,18 +23,19 @@ import org.bukkit.Material;
 import org.bukkit.configuration.Configuration;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class PerkConfig {
 
-    private Map<String, Perk> perks;
+    private LinkedHashMap<String, Perk> perks;
 
     private static final String BASE = "perks";
 
     private static final String POINT = ".";
 
     public void load(Configuration config, ConfigurationManager configurationManager) {
-        perks = new HashMap<>();
+        perks = new LinkedHashMap<>();
 
         for (String index : config.getConfigurationSection(BASE).getKeys(false)) {
             var displayName = config.getString(BASE + POINT + index + POINT + "displayName");

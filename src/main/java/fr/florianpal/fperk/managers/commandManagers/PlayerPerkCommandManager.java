@@ -20,9 +20,12 @@ package fr.florianpal.fperk.managers.commandManagers;
 import fr.florianpal.fperk.FPerk;
 import fr.florianpal.fperk.objects.PlayerPerk;
 import fr.florianpal.fperk.queries.PlayerPerkQueries;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class PlayerPerkCommandManager {
 
@@ -34,6 +37,14 @@ public class PlayerPerkCommandManager {
 
     public List<PlayerPerk> getPlayerPerk(Player player) {
         return playerPerkQueries.getPlayerPerks(player.getUniqueId());
+    }
+
+    public List<PlayerPerk> getPlayerPerk(OfflinePlayer player) {
+        return playerPerkQueries.getPlayerPerks(player.getUniqueId());
+    }
+
+    public Map<UUID, List<PlayerPerk>> getAllPlayerPerk() {
+        return playerPerkQueries.getAllPerks();
     }
 
     public int addPlayerPerk(PlayerPerk playerPerk) {

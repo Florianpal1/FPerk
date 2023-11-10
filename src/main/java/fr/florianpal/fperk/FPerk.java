@@ -13,6 +13,7 @@ import fr.florianpal.fperk.managers.commandManagers.CommandManager;
 import fr.florianpal.fperk.managers.commandManagers.PlayerPerkCommandManager;
 import fr.florianpal.fperk.placeholders.FPlaceholderExpansion;
 import fr.florianpal.fperk.queries.PlayerPerkQueries;
+import fr.florianpal.fperk.scheduler.LoadDataScheduler;
 import net.luckperms.api.LuckPerms;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -85,6 +86,10 @@ public class FPerk extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new BlockBreakListener(this), this);
         getServer().getPluginManager().registerEvents(new EntityDamageByEntityListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerMoveListener(this), this);
+        getServer().getPluginManager().registerEvents(new LeaveListener(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerChangedWorldListener(this), this);
+        getServer().getPluginManager().registerEvents(new EntityDamageListener(this), this);
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new LoadDataScheduler(this));
 
         RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
         if (provider != null) {
@@ -191,6 +196,10 @@ public class FPerk extends JavaPlugin {
         for(var perk : this.perkPlayer.entrySet()) {
             this.perkPlayer.get(perk.getKey()).remove(uuid);
         }
+    }
+
+    public Map<EffectType, List<UUID>> getAllPerkActive() {
+        return perkPlayer;
     }
 
     public LuckPerms getLuckPerms() {

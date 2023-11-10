@@ -3,6 +3,7 @@ package fr.florianpal.fperk.listeners;
 import co.aikar.taskchain.TaskChain;
 import fr.florianpal.fperk.FPerk;
 import fr.florianpal.fperk.configurations.PerkConfig;
+import fr.florianpal.fperk.enums.EffectType;
 import fr.florianpal.fperk.managers.commandManagers.PlayerPerkCommandManager;
 import fr.florianpal.fperk.objects.PlayerPerk;
 import fr.florianpal.fperk.utils.EffectUtils;
@@ -17,6 +18,8 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.Date;
 import java.util.List;
+
+import static fr.florianpal.fperk.utils.EffectUtils.checkPerk;
 
 public class JoinListener implements Listener {
 
@@ -34,6 +37,9 @@ public class JoinListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(PlayerJoinEvent event) {
+
+        checkPerk(plugin, event.getPlayer());
+
         TaskChain<List<PlayerPerk>> chain = FPerk.newChain();
         chain.asyncFirst(() -> playerPerkCommandManager.getPlayerPerk(event.getPlayer())).sync(playerPerks -> {
 
@@ -41,6 +47,7 @@ public class JoinListener implements Listener {
             var perks = perkConfig.getPerks();
             for (var playerPerk : playerPerks) {
                 var perk = perks.get(playerPerk.getPerk());
+
                 if (playerPerk.isEnabled() && player.hasPermission(perk.getPermission())) {
 
                     for (var competence : perk.getCompetences().entrySet()) {

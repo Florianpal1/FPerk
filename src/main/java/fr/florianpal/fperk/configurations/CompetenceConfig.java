@@ -19,19 +19,18 @@ package fr.florianpal.fperk.configurations;
 
 import fr.florianpal.fperk.enums.EffectType;
 import fr.florianpal.fperk.objects.Competence;
-import fr.florianpal.fperk.objects.Perk;
 import org.bukkit.configuration.Configuration;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class CompetenceConfig {
 
-    private Map<String, Competence> competences;
+    private LinkedHashMap<String, Competence> competences;
 
     public void load(Configuration config) {
-        competences = new HashMap<>();
+        competences = new LinkedHashMap<>();
 
         for (String index : config.getConfigurationSection("competences").getKeys(false)) {
             List<String> displayName = config.getStringList("competences." + index + ".displayName");

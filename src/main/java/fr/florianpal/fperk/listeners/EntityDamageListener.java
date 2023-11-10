@@ -7,20 +7,21 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
 
 import static fr.florianpal.fperk.enums.EffectType.ANTI_KNOCKBACK;
 
-public class EntityDamageByEntityListener implements Listener {
+public class EntityDamageListener implements Listener {
 
     private final FPerk plugin;
 
-    public EntityDamageByEntityListener(FPerk plugin) {
+    public EntityDamageListener(FPerk plugin) {
         this.plugin = plugin;
     }
 
     @EventHandler
-    public void onEntityDamage(EntityDamageByEntityEvent event) {
+    public void onEntityDamage(EntityDamageEvent event) {
 
         if(event.getEntity().getType().equals(EntityType.PLAYER)) {
             Player player = (Player) event.getEntity();

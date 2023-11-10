@@ -20,7 +20,6 @@ import co.aikar.commands.CommandIssuer;
 import fr.florianpal.fperk.FPerk;
 import fr.florianpal.fperk.configurations.gui.MainGuiConfig;
 import fr.florianpal.fperk.enums.ActionType;
-import fr.florianpal.fperk.enums.EffectType;
 import fr.florianpal.fperk.enums.StatusType;
 import fr.florianpal.fperk.gui.AbstractGui;
 import fr.florianpal.fperk.gui.GuiInterface;
@@ -33,7 +32,6 @@ import fr.florianpal.fperk.objects.gui.Barrier;
 import fr.florianpal.fperk.utils.EffectUtils;
 import fr.florianpal.fperk.utils.FormatUtils;
 import net.luckperms.api.model.user.User;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -41,15 +39,12 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-
-import static fr.florianpal.fperk.enums.EffectType.FLY;
 
 public class MainGui extends AbstractGui implements GuiInterface {
 
@@ -61,8 +56,8 @@ public class MainGui extends AbstractGui implements GuiInterface {
 
     private final PlayerPerkCommandManager playerPerkCommandManager;
 
-    public MainGui(FPerk plugin, List<Perk> perks, List<PlayerPerk> playerPerks, Player player, int page) {
-        super(plugin, plugin.getConfigurationManager().getMainGuiConfig(), player, page);
+    public MainGui(FPerk plugin, List<Perk> perks, List<PlayerPerk> playerPerks, Player player, Player showPlayer,int page) {
+        super(plugin, plugin.getConfigurationManager().getMainGuiConfig(), player, showPlayer, page);
         this.mainGuiConfig = plugin.getConfigurationManager().getMainGuiConfig();
         this.playerPerkCommandManager = plugin.getPlayerPerkCommandManager();
         this.perks = perks;
@@ -183,7 +178,7 @@ public class MainGui extends AbstractGui implements GuiInterface {
                 Perk perk = perks.get(index);
 
                 if(!player.hasPermission(perk.getPermission())) {
-                    CommandIssuer issuerTarget = commandManager.getCommandIssuer(player);
+                    CommandIssuer issuerTarget = commandManager.getCommandIssuer(showPlayer);
                     issuerTarget.sendInfo(MessageKeys.NO_PERMISSION, "{PerkName}", perk.getDisplayName());
                     return;
                 }
@@ -202,7 +197,7 @@ public class MainGui extends AbstractGui implements GuiInterface {
                     var playerPerk = optionalPlayerPerk.get();
 
                     if(!perk.isIgnoreDelais() && perk.getDelais() < playerPerk.getLastEnabled().getTime() - new Date().getTime()) {
-                        CommandIssuer issuerTarget = commandManager.getCommandIssuer(player);
+                        CommandIssuer issuerTarget = commandManager.getCommandIssuer(showPlayer);
                         issuerTarget.sendInfo(MessageKeys.DELAIS, "{PerkName}", perk.getDisplayName());
                         return;
                     }
@@ -212,11 +207,12 @@ public class MainGui extends AbstractGui implements GuiInterface {
                         EffectUtils.disabledPerk(plugin, player, perk);
                         this.playerPerks.stream().filter(p -> p.getId() == playerPerk.getId()).forEach(p -> p.setEnabled(false));
 
+
                         playerPerk.setEnabled(false);
                         playerPerkCommandManager.updatePlayerPerk(playerPerk);
                     } else {
                         if (result <= count) {
-                            CommandIssuer issuerTarget = commandManager.getCommandIssuer(player);
+                            CommandIssuer issuerTarget = commandManager.getCommandIssuer(showPlayer);
                             issuerTarget.sendInfo(MessageKeys.MAX_PERK);
                             return;
                         }
@@ -229,7 +225,7 @@ public class MainGui extends AbstractGui implements GuiInterface {
                     }
                 } else {
                     if (result <= count) {
-                        CommandIssuer issuerTarget = commandManager.getCommandIssuer(player);
+                        CommandIssuer issuerTarget = commandManager.getCommandIssuer(showPlayer);
                         issuerTarget.sendInfo(MessageKeys.MAX_PERK);
                         return;
                     }
@@ -256,7 +252,7 @@ public class MainGui extends AbstractGui implements GuiInterface {
                     }
                     plugin.removeAllPerkActive(player.getUniqueId());
 
-                    CommandIssuer issuerTarget = commandManager.getCommandIssuer(player);
+                    CommandIssuer issuerTarget = commandManager.getCommandIssuer(showPlayer);
                     issuerTarget.sendInfo(MessageKeys.DISABLE_ALL_PERK);
                 }
             }
