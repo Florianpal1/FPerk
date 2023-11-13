@@ -250,6 +250,9 @@ public class MainGui extends AbstractGui implements GuiInterface {
                     for (PotionEffect potionEffect : player.getActivePotionEffects()) {
                         player.removePotionEffect(potionEffect.getType());
                     }
+                    EffectUtils.enabledFly(player, false);
+                    EffectUtils.resetFlySpeed(player);
+
                     plugin.removeAllPerkActive(player.getUniqueId());
 
                     CommandIssuer issuerTarget = commandManager.getCommandIssuer(showPlayer);
