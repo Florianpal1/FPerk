@@ -132,9 +132,12 @@ public class EffectUtils {
                 Perk perk = getPerkWithCompetence(plugin, perkActive.getKey());
                 switch (perkActive.getKey()) {
                     case FLY -> {
-                        if (perk.isPersistant()) {
+                        if (perk.isPersistant() && player.hasPermission(perk.getPermission())) {
                             EffectUtils.enabledFly(player, true);
                             plugin.addPerkActive(player.getUniqueId(), FLY);
+                        } else if (!player.hasPermission(perk.getPermission())) {
+                            EffectUtils.enabledFly(player, false);
+                            plugin.removePerkActive(player.getUniqueId(), FLY);
                         }
                     }
                 }

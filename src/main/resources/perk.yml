@@ -9,6 +9,8 @@ perks:
     time: 500 # In MilliSeconds
     persistant: false
     permission: "fperk.fly"
+    bannedWorld:
+      - "sunpeche"
   "heal":
     displayName: "Soin"
     material: "BEACON"

@@ -4,6 +4,7 @@ import co.aikar.taskchain.TaskChain;
 import fr.florianpal.fperk.FPerk;
 import fr.florianpal.fperk.configurations.PerkConfig;
 import fr.florianpal.fperk.enums.EffectType;
+import fr.florianpal.fperk.managers.VaultIntegrationManager;
 import fr.florianpal.fperk.managers.commandManagers.PlayerPerkCommandManager;
 import fr.florianpal.fperk.objects.PlayerPerk;
 import fr.florianpal.fperk.utils.EffectUtils;
@@ -15,6 +16,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 import java.util.Date;
 import java.util.List;
@@ -29,10 +31,13 @@ public class JoinListener implements Listener {
 
     private final PerkConfig perkConfig;
 
+    private final VaultIntegrationManager vaultIntegrationManager;
+
     public JoinListener(FPerk plugin) {
         this.plugin = plugin;
         this.playerPerkCommandManager = plugin.getPlayerPerkCommandManager();
         this.perkConfig = plugin.getConfigurationManager().getPerkConfig();
+        this.vaultIntegrationManager = plugin.getVaultIntegrationManager();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -48,7 +53,8 @@ public class JoinListener implements Listener {
             for (var playerPerk : playerPerks) {
                 var perk = perks.get(playerPerk.getPerk());
 
-                if (playerPerk.isEnabled() && player.hasPermission(perk.getPermission())) {
+                boolean havePermission = plugin.getLuckPerms().getUserManager().getUser(player.getUniqueId()).getCachedData().getPermissionData().checkPermission(perk.getPermission()).asBoolean();
+                if (havePermission && playerPerk.isEnabled()) {
 
                     for (var competence : perk.getCompetences().entrySet()) {
                         long time = new Date().getTime() - playerPerk.getLastEnabled().getTime();
@@ -131,6 +137,7 @@ public class JoinListener implements Listener {
                                 var potionEffectType = PotionEffectType.getByName(competence.getValue().getEffect());
                                 if (potionEffectType != null) {
                                     player.removePotionEffect(potionEffectType);
+                                    Bukkit.getScheduler().runTaskLater(plugin, () -> player.removePotionEffect(potionEffectType), 80L);
                                 }
                             }
                             case FLY -> {

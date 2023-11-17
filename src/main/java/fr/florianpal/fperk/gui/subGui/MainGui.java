@@ -24,6 +24,7 @@ import fr.florianpal.fperk.enums.StatusType;
 import fr.florianpal.fperk.gui.AbstractGui;
 import fr.florianpal.fperk.gui.GuiInterface;
 import fr.florianpal.fperk.languages.MessageKeys;
+import fr.florianpal.fperk.managers.VaultIntegrationManager;
 import fr.florianpal.fperk.managers.commandManagers.PlayerPerkCommandManager;
 import fr.florianpal.fperk.objects.Perk;
 import fr.florianpal.fperk.objects.PlayerPerk;
@@ -48,20 +49,17 @@ import java.util.Optional;
 
 public class MainGui extends AbstractGui implements GuiInterface {
 
-    private final List<Perk> perks;
-
-    private final List<PlayerPerk> playerPerks;
-
     private final MainGuiConfig mainGuiConfig;
 
     private final PlayerPerkCommandManager playerPerkCommandManager;
 
+    private final VaultIntegrationManager vaultIntegrationManager;
+
     public MainGui(FPerk plugin, List<Perk> perks, List<PlayerPerk> playerPerks, Player player, Player showPlayer,int page) {
-        super(plugin, plugin.getConfigurationManager().getMainGuiConfig(), player, showPlayer, page);
+        super(plugin, plugin.getConfigurationManager().getMainGuiConfig(), player, showPlayer, page, perks, playerPerks);
         this.mainGuiConfig = plugin.getConfigurationManager().getMainGuiConfig();
         this.playerPerkCommandManager = plugin.getPlayerPerkCommandManager();
-        this.perks = perks;
-        this.playerPerks = playerPerks;
+        this.vaultIntegrationManager = plugin.getVaultIntegrationManager();
 
         String titleInv = mainGuiConfig.getNameGui();
         titleInv = titleInv.replace("{Page}", String.valueOf(this.page)).replace("{TotalPage}", String.valueOf(((this.perks.size() - 1) / mainGuiConfig.getPerkBlocks().size()) + 1));
@@ -177,7 +175,9 @@ public class MainGui extends AbstractGui implements GuiInterface {
                 int index = before + ((this.mainGuiConfig.getPerkBlocks().size() * this.page) - this.mainGuiConfig.getPerkBlocks().size());
                 Perk perk = perks.get(index);
 
-                if(!player.hasPermission(perk.getPermission())) {
+
+                boolean havePermission = plugin.getLuckPerms().getUserManager().getUser(player.getUniqueId()).getCachedData().getPermissionData().checkPermission(perk.getPermission()).asBoolean();
+                if(!havePermission) {
                     CommandIssuer issuerTarget = commandManager.getCommandIssuer(showPlayer);
                     issuerTarget.sendInfo(MessageKeys.NO_PERMISSION, "{PerkName}", perk.getDisplayName());
                     return;
@@ -196,7 +196,7 @@ public class MainGui extends AbstractGui implements GuiInterface {
                 if (optionalPlayerPerk.isPresent()) {
                     var playerPerk = optionalPlayerPerk.get();
 
-                    if(!perk.isIgnoreDelais() && perk.getDelais() < playerPerk.getLastEnabled().getTime() - new Date().getTime()) {
+                    if((!playerPerk.isEnabled()) && (!perk.isIgnoreDelais()) && perk.getDelais() > playerPerk.getLastEnabled().getTime() - new Date().getTime()) {
                         CommandIssuer issuerTarget = commandManager.getCommandIssuer(showPlayer);
                         issuerTarget.sendInfo(MessageKeys.DELAIS, "{PerkName}", perk.getDisplayName());
                         return;

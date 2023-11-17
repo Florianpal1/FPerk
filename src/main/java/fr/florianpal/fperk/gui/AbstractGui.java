@@ -22,6 +22,8 @@ import fr.florianpal.fperk.FPerk;
 import fr.florianpal.fperk.configurations.AbstractGuiConfiguration;
 import fr.florianpal.fperk.configurations.GlobalConfig;
 import fr.florianpal.fperk.managers.commandManagers.CommandManager;
+import fr.florianpal.fperk.objects.Perk;
+import fr.florianpal.fperk.objects.PlayerPerk;
 import fr.florianpal.fperk.objects.gui.Action;
 import fr.florianpal.fperk.objects.gui.Barrier;
 import fr.florianpal.fperk.utils.FormatUtils;
@@ -55,11 +57,17 @@ public abstract class AbstractGui implements InventoryHolder, Listener {
 
     protected final AbstractGuiConfiguration abstractGuiConfiguration;
 
+    protected final List<Perk> perks;
+
+    protected final List<PlayerPerk> playerPerks;
+
     private int referenceItem = 0;
 
     private int referenceBarrier = 0;
 
-    protected AbstractGui(FPerk plugin, AbstractGuiConfiguration abstractGuiConfiguration, Player player, Player showPlayer, int page) {
+    protected AbstractGui(FPerk plugin, AbstractGuiConfiguration abstractGuiConfiguration, Player player, Player showPlayer, int page, List<Perk> perks, List<PlayerPerk> playerPerks) {
+        this.perks = perks;
+        this.playerPerks = playerPerks;
         this.plugin = plugin;
         this.player = player;
         this.showPlayer = showPlayer;
@@ -151,10 +159,12 @@ public abstract class AbstractGui implements InventoryHolder, Listener {
         }
 
         ItemMeta meta = itemStack.getItemMeta();
+        name = name.replace("{ActivatedPerk}", String.valueOf(playerPerks.stream().filter(PlayerPerk::isEnabled).count()));
         name = FormatUtils.format(name);
         List<String> descriptions = new ArrayList<>();
         for (String desc : description) {
 
+            desc = desc.replace("{ActivatedPerk}", String.valueOf(playerPerks.stream().filter(PlayerPerk::isEnabled).count()));
             desc = FormatUtils.format(desc);
             descriptions.add(desc);
         }

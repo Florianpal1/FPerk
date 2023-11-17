@@ -11,6 +11,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
 
 import static fr.florianpal.fperk.enums.EffectType.ANTI_KNOCKBACK;
+import static fr.florianpal.fperk.enums.EffectType.BROKEN_FALL;
 
 public class EntityDamageListener implements Listener {
 
@@ -28,6 +29,12 @@ public class EntityDamageListener implements Listener {
             if(plugin.isPerkActive(player.getUniqueId(), ANTI_KNOCKBACK)) {
                 player.setVelocity(new Vector());
                 Bukkit.getScheduler().runTaskLater(plugin, () -> player.setVelocity(new Vector()), 1L);
+            }
+
+            if(plugin.isPerkActive(player.getUniqueId(), BROKEN_FALL)) {
+                if(event.getCause() == EntityDamageEvent.DamageCause.FALL) {
+                    event.setDamage(0);
+                }
             }
         }
     }

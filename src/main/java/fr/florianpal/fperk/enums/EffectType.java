@@ -25,5 +25,7 @@ public enum EffectType {
 
     SECOND_CHANCE,
 
+    BROKEN_FALL,
+
     ASPIRATOR,
 }
