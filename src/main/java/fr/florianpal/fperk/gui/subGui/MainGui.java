@@ -211,7 +211,7 @@ public class MainGui extends AbstractGui implements GuiInterface {
                         playerPerk.setEnabled(false);
                         playerPerkCommandManager.updatePlayerPerk(playerPerk);
                     } else {
-                        if (result <= count) {
+                        if (result <= count && (perk.getPermissionBypass() == null || !player.hasPermission(perk.getPermissionBypass()))) {
                             CommandIssuer issuerTarget = commandManager.getCommandIssuer(showPlayer);
                             issuerTarget.sendInfo(MessageKeys.MAX_PERK);
                             return;
@@ -224,7 +224,7 @@ public class MainGui extends AbstractGui implements GuiInterface {
                         playerPerkCommandManager.updatePlayerPerk(playerPerk);
                     }
                 } else {
-                    if (result <= count) {
+                    if (result <= count && (perk.getPermissionBypass() == null || !player.hasPermission(perk.getPermissionBypass()))) {
                         CommandIssuer issuerTarget = commandManager.getCommandIssuer(showPlayer);
                         issuerTarget.sendInfo(MessageKeys.MAX_PERK);
                         return;

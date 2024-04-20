@@ -31,9 +31,11 @@ public class Perk {
 
     private final String permission;
 
+    private final String permissionBypass;
+
     private final String texture;
 
-    public Perk(String id, String displayName, Material material, Map<String, Competence> competences, int delais, boolean ignoreDelais, int time, boolean persistant, String permission, String texture) {
+    public Perk(String id, String displayName, Material material, Map<String, Competence> competences, int delais, boolean ignoreDelais, int time, boolean persistant, String permission, String permissionBypass, String texture) {
         this.id = id;
         this.displayName = displayName;
         this.material = material;
@@ -43,6 +45,7 @@ public class Perk {
         this.time = time;
         this.persistant = persistant;
         this.permission = permission;
+        this.permissionBypass = permissionBypass;
         this.texture = texture;
     }
 
@@ -111,5 +114,9 @@ public class Perk {
 
     public boolean isIgnoreDelais() {
         return ignoreDelais;
+    }
+
+    public String getPermissionBypass() {
+        return permissionBypass;
     }
 }

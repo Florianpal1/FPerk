@@ -140,6 +140,19 @@ public class EffectUtils {
                             plugin.removePerkActive(player.getUniqueId(), FLY);
                         }
                     }
+                    case EFFECT -> {
+                        for(Competence competence : perk.getCompetences().values()) {
+                            var potionEffectType = PotionEffectType.getByName(competence.getEffect());
+                            if (potionEffectType != null) {
+                                player.addPotionEffect(new PotionEffect(potionEffectType, -1, (int) competence.getLevel(), false, false));
+                            }
+                        }
+                    }
+                    case FLY_SPEED -> {
+                        for(Competence competence : perk.getCompetences().values()) {
+                            player.setFlySpeed(competence.getLevel());
+                        }
+                    }
                 }
             }
         }

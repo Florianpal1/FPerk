@@ -46,6 +46,7 @@ public class PerkConfig {
             var time = config.getInt(BASE + POINT + index + POINT + "time");
             var persistant = config.getBoolean(BASE + POINT + index + POINT + "persistant");
             var permission = config.getString(BASE + POINT + index + POINT + "permission");
+            var permissionBypass = config.getString(BASE + POINT + index + POINT + "permissionBypass", null);
             var texture = config.getString(BASE + POINT + index + POINT + "texture", "");
 
             Map<String, Competence> competenceMap = new HashMap<>();
@@ -64,6 +65,7 @@ public class PerkConfig {
                             time,
                             persistant,
                             permission,
+                            permissionBypass,
                             texture
                     )
             );

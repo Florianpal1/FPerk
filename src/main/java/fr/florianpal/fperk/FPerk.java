@@ -89,6 +89,7 @@ public class FPerk extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new LeaveListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerChangedWorldListener(this), this);
         getServer().getPluginManager().registerEvents(new EntityDamageListener(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerRespawnListener(this), this);
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new LoadDataScheduler(this));
 
         RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);

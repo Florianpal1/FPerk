@@ -10,7 +10,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.ItemStack;
 
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,9 +33,8 @@ public class PlayerMoveListener implements Listener {
         if (plugin.isPerkActive(player.getUniqueId(), ASPIRATOR)) {
             List<Entity> entities = event.getTo().getNearbyEntities(3, 3, 3).stream().toList();
             for (Entity entity : entities) {
-                if (entity instanceof Item item && (havePlaceInInventory(player) && item.canPlayerPickup())) {
-                    player.getPlayer().getInventory().addItem(item.getItemStack());
-                    item.remove();
+                if (entity instanceof Item item && (havePlaceInInventory(player, item) && item.canPlayerPickup())) {
+                    addItemInInventory(player, item);
                 }
             }
         }
@@ -43,7 +44,33 @@ public class PlayerMoveListener implements Listener {
         }
     }
 
-    public boolean havePlaceInInventory(Player player) {
-        return Arrays.stream(player.getInventory().getStorageContents()).anyMatch(i -> i == null || i.getType().equals(Material.AIR));
+    public boolean havePlaceInInventory(Player player, Item item) {
+        boolean emptyEmplacement = Arrays.stream(player.getInventory().getStorageContents()).anyMatch(i -> (i == null || i.getType().equals(Material.AIR)));
+        boolean sameItemStack = Arrays.stream(player.getInventory().getStorageContents()).filter(i -> !(i == null || i.getType().equals(Material.AIR))).anyMatch(i -> i.isSimilar(item.getItemStack()) && (i.getAmount() + item.getItemStack().getAmount() <= item.getItemStack().getMaxStackSize()));
+
+        return emptyEmplacement || sameItemStack;
     }
+
+
+    public void addItemInInventory(Player player, Item item) {
+        boolean emptyEmplacement = Arrays.stream(player.getInventory().getStorageContents()).anyMatch(i -> (i == null || i.getType().equals(Material.AIR)));
+        if (emptyEmplacement) {
+            player.getPlayer().getInventory().addItem(item.getItemStack());
+            item.remove();
+        } else {
+
+            for (var itemStack : player.getInventory().getStorageContents()) {
+                if((itemStack != null && !itemStack.getType().equals(Material.AIR))) {
+                    if(itemStack.isSimilar(item.getItemStack()) && (itemStack.getAmount() + item.getItemStack().getAmount() <= item.getItemStack().getMaxStackSize())) {
+                        itemStack.setAmount(itemStack.getAmount() + item.getItemStack().getAmount());
+                        item.remove();
+                        return;
+                    }
+                }
+
+            }
+        }
+    }
+
+
 }
