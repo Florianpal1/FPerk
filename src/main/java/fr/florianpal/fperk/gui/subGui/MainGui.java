@@ -196,7 +196,7 @@ public class MainGui extends AbstractGui implements GuiInterface {
                 if (optionalPlayerPerk.isPresent()) {
                     var playerPerk = optionalPlayerPerk.get();
 
-                    if((!playerPerk.isEnabled()) && (!perk.isIgnoreDelais()) && perk.getDelais() > playerPerk.getLastEnabled().getTime() - new Date().getTime()) {
+                    if((!playerPerk.isEnabled()) && (!perk.isIgnoreDelais()) && perk.getDelais() > new Date().getTime() - playerPerk.getLastEnabled().getTime()) {
                         CommandIssuer issuerTarget = commandManager.getCommandIssuer(showPlayer);
                         issuerTarget.sendInfo(MessageKeys.DELAIS, "{PerkName}", perk.getDisplayName());
                         return;

@@ -25,9 +25,15 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class DatabaseManager {
+
     private final HikariDataSource ds;
+
     private final FPerk plugin;
+
     private final ArrayList<IDatabaseTable> repositories = new ArrayList<>();
+
+    private Connection connection;
+
     public DatabaseManager(FPerk plugin) {
         this.plugin = plugin;
         HikariConfig config = new HikariConfig();
@@ -42,7 +48,10 @@ public class DatabaseManager {
 
 
     public Connection getConnection() throws SQLException {
-        return ds.getConnection();
+        if (connection.isClosed()) {
+            connection = ds.getConnection();
+        }
+        return connection;
     }
 
     public void addRepository(IDatabaseTable repository) {

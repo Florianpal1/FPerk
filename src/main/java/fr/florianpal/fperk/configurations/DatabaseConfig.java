@@ -17,15 +17,18 @@
 package fr.florianpal.fperk.configurations;
 
 
+import fr.florianpal.fperk.enums.SQLType;
 import org.bukkit.configuration.Configuration;
 
 public class DatabaseConfig {
 
+    private SQLType sqlType;
     private String url;
     private String user;
     private String password;
 
     public void load(Configuration config) {
+        sqlType = SQLType.valueOf(config.getString("database.type", SQLType.MySQL.toString()));
         url = config.getString("database.url");
         user = config.getString("database.user");
         password = config.getString("database.password");
@@ -41,5 +44,9 @@ public class DatabaseConfig {
 
     public String getPassword() {
         return password;
+    }
+
+    public SQLType getSqlType() {
+        return sqlType;
     }
 }

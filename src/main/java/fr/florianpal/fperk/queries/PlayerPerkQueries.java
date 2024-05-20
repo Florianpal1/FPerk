@@ -18,6 +18,7 @@ package fr.florianpal.fperk.queries;
 
 import fr.florianpal.fperk.FPerk;
 import fr.florianpal.fperk.IDatabaseTable;
+import fr.florianpal.fperk.enums.SQLType;
 import fr.florianpal.fperk.managers.DatabaseManager;
 import fr.florianpal.fperk.objects.PlayerPerk;
 import org.bukkit.entity.Player;
@@ -42,11 +43,20 @@ public class PlayerPerkQueries implements IDatabaseTable {
 
     private final DatabaseManager databaseManager;
 
+    private String autoIncrement = "AUTO_INCREMENT";
+
+    private String parameters = "DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
+
     private final FPerk plugin;
 
     public PlayerPerkQueries(FPerk plugin) {
         this.databaseManager = plugin.getDatabaseManager();
         this.plugin = plugin;
+
+        if (plugin.getConfigurationManager().getDatabase().getSqlType() == SQLType.SQLite) {
+            autoIncrement = "AUTOINCREMENT";
+            parameters = "";
+        }
     }
 
     public int addPlayerPerk(PlayerPerk playerPerk) {
@@ -217,12 +227,12 @@ public class PlayerPerkQueries implements IDatabaseTable {
     @Override
     public String[] getTable() {
         return new String[]{"fperk_playerperk",
-                "`id` INTEGER NOT NULL AUTO_INCREMENT, " +
+                "`id` INTEGER PRIMARY KEY " + autoIncrement + ", " +
                         "`playerUUID` VARCHAR(36) NOT NULL, " +
                         "`perk` VARCHAR(36) NOT NULL, " +
                         "`lastEnabled` LONG NOT NULL, " +
-                        "`isEnabled` TINYINT(1) NOT NULL, " +
-                        "PRIMARY KEY (`id`)",
-                "DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci"};
+                        "`isEnabled` TINYINT(1) NOT NULL",
+                parameters
+        };
     }
 }
