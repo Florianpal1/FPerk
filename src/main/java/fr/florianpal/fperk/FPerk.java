@@ -11,6 +11,7 @@ import fr.florianpal.fperk.managers.DatabaseManager;
 import fr.florianpal.fperk.managers.VaultIntegrationManager;
 import fr.florianpal.fperk.managers.commandManagers.CommandManager;
 import fr.florianpal.fperk.managers.commandManagers.PlayerPerkCommandManager;
+import fr.florianpal.fperk.objects.PlayerPerk;
 import fr.florianpal.fperk.placeholders.FPlaceholderExpansion;
 import fr.florianpal.fperk.queries.PlayerPerkQueries;
 import fr.florianpal.fperk.scheduler.LoadDataScheduler;
@@ -100,6 +101,21 @@ public class FPerk extends JavaPlugin {
         for(EffectType effectType : EffectType.values()) {
             perkPlayer.put(effectType, new ArrayList<>());
         }
+
+        TaskChain<Map<UUID, List<PlayerPerk>>> chain = FPerk.newChain();
+        chain.asyncFirst(() -> playerPerkCommandManager.getAllPlayerPerk()).syncLast(allPlayerPerks -> {
+            for (var playerPerk : allPlayerPerks.entrySet()) {
+                for (var perk : playerPerk.getValue()) {
+                    if(perk.isEnabled()) {
+
+                        var perkCurrent = configurationManager.getPerkConfig().getPerks().get(perk.getPerk());
+                        for (var comp : perkCurrent.getCompetences().entrySet()) {
+                            perkPlayer.get(comp.getValue().getType()).add(playerPerk.getKey());
+                        }
+                    }
+                }
+            }
+        }).execute();
 
         if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new FPlaceholderExpansion(this).register();

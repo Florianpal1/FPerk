@@ -167,7 +167,8 @@ public class PlayerPerkQueries implements IDatabaseTable {
                 if(playerPerks.containsKey(uuid)) {
                     playerPerks.get(uuid).add(new PlayerPerk(id, uuid, perk, lastEnabled, enabled));
                 } else {
-                    playerPerks.put(uuid, List.of(new PlayerPerk(id, uuid, perk, lastEnabled, enabled)));
+                    playerPerks.put(uuid, new ArrayList<>());
+                    playerPerks.get(uuid).add(new PlayerPerk(id, uuid, perk, lastEnabled, enabled));
                 }
 
             }

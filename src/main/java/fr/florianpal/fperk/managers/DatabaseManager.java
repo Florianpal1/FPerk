@@ -48,10 +48,7 @@ public class DatabaseManager {
 
 
     public Connection getConnection() throws SQLException {
-        if (connection.isClosed()) {
-            connection = ds.getConnection();
-        }
-        return connection;
+        return ds.getConnection();
     }
 
     public void addRepository(IDatabaseTable repository) {
