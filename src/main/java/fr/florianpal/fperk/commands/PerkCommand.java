@@ -60,7 +60,7 @@ public class PerkCommand extends BaseCommand {
         TaskChain<Perk> chain = FPerk.newChain();
         chain.asyncFirst(() -> playerPerkCommandManager.getPlayerPerk(playerSender)).sync(playerPerks -> {
             MainGui mainGui = new MainGui(plugin, perkConfig.getPerks().values().stream().toList(), playerPerks, playerSender, playerSender,1);
-            mainGui.initializeItems();
+            mainGui.refreshGui();
 
             CommandIssuer issuerTarget = commandManager.getCommandIssuer(playerSender);
             issuerTarget.sendInfo(MessageKeys.SHOW_PERK);
@@ -79,7 +79,7 @@ public class PerkCommand extends BaseCommand {
             TaskChain<Perk> chain = FPerk.newChain();
             chain.asyncFirst(() -> playerPerkCommandManager.getPlayerPerk(offlinePlayer)).sync(playerPerks -> {
                 MainGui mainGui = new MainGui(plugin, perkConfig.getPerks().values().stream().toList(), playerPerks, offlinePlayer.getPlayer(), playerSender, 1);
-                mainGui.initializeItems();
+                mainGui.refreshGui();
 
                 CommandIssuer issuerTarget = commandManager.getCommandIssuer(playerSender);
                 issuerTarget.sendInfo(MessageKeys.SHOW_PERK);

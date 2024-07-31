@@ -96,6 +96,14 @@
     </repositories>
 
     <dependencies>
+        <!--PaperLib API-->
+        <dependency>
+            <groupId>io.papermc</groupId>
+            <artifactId>paperlib</artifactId>
+            <version>1.0.4</version>
+            <scope>compile</scope>
+        </dependency>
+
         <!--Paper API-->
         <dependency>
             <groupId>io.papermc.paper</groupId>

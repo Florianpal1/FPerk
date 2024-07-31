@@ -17,11 +17,15 @@
 package fr.florianpal.fperk.gui;
 
 import org.bukkit.Material;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
 public interface GuiInterface {
     ItemStack createGuiItem(Material material, String name, List<String> description, String texture);
-    void initializeItems();
+    void refreshGui();
+
+    void initCustomObject();
+    void onInventoryClickCustom(InventoryClickEvent event);
 }

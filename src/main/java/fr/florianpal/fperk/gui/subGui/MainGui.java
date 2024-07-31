@@ -29,13 +29,10 @@ import fr.florianpal.fperk.managers.commandManagers.PlayerPerkCommandManager;
 import fr.florianpal.fperk.objects.Perk;
 import fr.florianpal.fperk.objects.PlayerPerk;
 import fr.florianpal.fperk.objects.gui.Action;
-import fr.florianpal.fperk.objects.gui.Barrier;
 import fr.florianpal.fperk.utils.EffectUtils;
 import fr.florianpal.fperk.utils.FormatUtils;
 import net.luckperms.api.model.user.User;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -66,9 +63,8 @@ public class MainGui extends AbstractGui implements GuiInterface {
         initGui(titleInv, mainGuiConfig.getSize(), perks.size(), mainGuiConfig.getPerkBlocks().size());
     }
 
-    public void initializeItems() {
-        inv.clear();
-
+    @Override
+    public void initCustomObject() {
         if (!this.perks.isEmpty()) {
             int id = (this.mainGuiConfig.getPerkBlocks().size() * this.page) - this.mainGuiConfig.getPerkBlocks().size();
             for (int index : mainGuiConfig.getPerkBlocks()) {
@@ -78,20 +74,13 @@ public class MainGui extends AbstractGui implements GuiInterface {
                 if (id >= (perks.size())) break;
             }
         }
-        initClose();
-        initPrevious();
-        initNext(perks.size(), this.mainGuiConfig.getPerkBlocks().size());
-        initAction();
-        initBarrier();
-        openInventory();
     }
 
     private ItemStack createGuiItem(Perk perk, Optional<PlayerPerk> playerPerk) {
         ItemStack item = perk.getItemStack().clone();
         ItemMeta meta = item.getItemMeta();
         String title = mainGuiConfig.getPerkTitle();
-        title = title.replace("{Name}", perk.getDisplayName());
-        title = FormatUtils.format(title);
+        title = FormatUtils.format(title.replace("{Name}", perk.getDisplayName()));
         DecimalFormat df = new DecimalFormat();
         df.setMaximumFractionDigits(2);
         List<String> listDescription = new ArrayList<>();
@@ -128,39 +117,8 @@ public class MainGui extends AbstractGui implements GuiInterface {
         return item;
     }
 
-    @EventHandler
-    public void onInventoryClick(InventoryClickEvent e) {
-        if (inv.getHolder() != this || e.getInventory() != inv) {
-            return;
-        }
-
-        e.setCancelled(true);
-        ItemStack clickedItem = e.getCurrentItem();
-        if (clickedItem == null || clickedItem.getType() == Material.AIR) return;
-
-
-        for (Barrier next : mainGuiConfig.getNextBlocks()) {
-            if (e.getRawSlot() == next.getIndex() && ((this.mainGuiConfig.getPerkBlocks().size() * this.page) - this.mainGuiConfig.getPerkBlocks().size() < perks.size() - this.mainGuiConfig.getPerkBlocks().size()) && next.getMaterial() != next.getRemplacement().getMaterial()) {
-                this.page = this.page + 1;
-                initializeItems();
-                return;
-            }
-        }
-
-        for (Barrier previous : mainGuiConfig.getPreviousBlocks()) {
-            if (e.getRawSlot() == previous.getIndex() && this.page > 1) {
-                this.page = page - 1;
-                initializeItems();
-                return;
-            }
-        }
-
-        for (Barrier close : mainGuiConfig.getCloseBlocks()) {
-            if (e.getRawSlot() == close.getIndex()) {
-                inv.close();
-                return;
-            }
-        }
+    @Override
+    public void onInventoryClickCustom(InventoryClickEvent e) {
 
         for (Integer perkBlock : mainGuiConfig.getPerkBlocks()) {
             if (e.getRawSlot() == perkBlock) {
@@ -237,7 +195,7 @@ public class MainGui extends AbstractGui implements GuiInterface {
                     EffectUtils.enabledPerk(plugin, player, playerPerk, perk);
 
                 }
-                initializeItems();
+                refreshGui();
                 return;
             }
         }

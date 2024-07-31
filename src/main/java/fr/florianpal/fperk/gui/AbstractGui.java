@@ -16,8 +16,8 @@
 
 package fr.florianpal.fperk.gui;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
+import com.destroystokyo.paper.profile.PlayerProfile;
+import com.destroystokyo.paper.profile.ProfileProperty;
 import fr.florianpal.fperk.FPerk;
 import fr.florianpal.fperk.configurations.AbstractGuiConfiguration;
 import fr.florianpal.fperk.configurations.GlobalConfig;
@@ -27,10 +27,13 @@ import fr.florianpal.fperk.objects.PlayerPerk;
 import fr.florianpal.fperk.objects.gui.Action;
 import fr.florianpal.fperk.objects.gui.Barrier;
 import fr.florianpal.fperk.utils.FormatUtils;
+import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -38,13 +41,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-import static java.util.UUID.randomUUID;
-
-public abstract class AbstractGui implements InventoryHolder, Listener {
+public abstract class AbstractGui implements InventoryHolder, Listener, GuiInterface {
     protected Inventory inv;
 
     protected final FPerk plugin;
@@ -82,11 +83,18 @@ public abstract class AbstractGui implements InventoryHolder, Listener {
 
     protected void initGui(String title, int size, int referenceItem, int referenceBarrier) {
         inv = Bukkit.createInventory(this, size, title);
+        this.referenceBarrier = referenceBarrier;
+        this.referenceItem = referenceItem;
+        refreshGui();
+    }
+
+    public void refreshGui() {
         initBarrier();
         initClose();
         initPrevious();
         initAction();
         initNext(referenceItem, referenceBarrier);
+        initCustomObject();
     }
 
     protected void initBarrier() {
@@ -130,37 +138,25 @@ public abstract class AbstractGui implements InventoryHolder, Listener {
     }
 
     public ItemStack createGuiItem(Material material, String name, List<String> description, String texture) {
-        ItemStack itemStack;
+        ItemStack itemStack = new ItemStack(material, 1);
+
         if (material == Material.PLAYER_HEAD) {
-            itemStack = new ItemStack(Material.PLAYER_HEAD, 1);
-            SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
-
-            GameProfile gameProfile = new GameProfile(randomUUID(), null);
-
-            Field field = null;
-            try {
-                field = skullMeta.getClass().getDeclaredField("profile");
-            } catch (NoSuchFieldException e) {
-                throw new RuntimeException(e);
-            }
-            gameProfile.getProperties().put("textures", new Property("textures", texture));
-
-            field.setAccessible(true); // We set as accessible to modify.
-            try {
-                field.set(skullMeta, gameProfile);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
+            if (PaperLib.isPaper()) {
+                PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID());
+                profile.setProperty(new ProfileProperty("textures", texture));
+                ItemStack head = new ItemStack(Material.PLAYER_HEAD);
+                SkullMeta skullMeta = (SkullMeta) head.getItemMeta();
+                skullMeta.setPlayerProfile(profile);
+                itemStack.setItemMeta(skullMeta);
             }
 
-            itemStack.setItemMeta(skullMeta);
             itemStack.setAmount(1);
-        } else {
-            itemStack = new ItemStack(material, 1);
         }
 
         ItemMeta meta = itemStack.getItemMeta();
         name = name.replace("{ActivatedPerk}", String.valueOf(playerPerks.stream().filter(PlayerPerk::isEnabled).count()));
         name = FormatUtils.format(name);
+
         List<String> descriptions = new ArrayList<>();
         for (String desc : description) {
 
@@ -168,12 +164,50 @@ public abstract class AbstractGui implements InventoryHolder, Listener {
             desc = FormatUtils.format(desc);
             descriptions.add(desc);
         }
+
         if (meta != null) {
             meta.setDisplayName(name);
             meta.setLore(descriptions);
             itemStack.setItemMeta(meta);
         }
         return itemStack;
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent e) {
+        if (inv.getHolder() != this || e.getInventory() != inv) {
+            return;
+        }
+
+        e.setCancelled(true);
+        ItemStack clickedItem = e.getCurrentItem();
+        if (clickedItem == null || clickedItem.getType() == Material.AIR) return;
+
+
+        for (Barrier next : abstractGuiConfiguration.getNextBlocks()) {
+            if (e.getRawSlot() == next.getIndex() && ((this.referenceBarrier * this.page) - this.referenceBarrier < perks.size() - this.referenceBarrier) && next.getMaterial() != next.getRemplacement().getMaterial()) {
+                this.page = this.page + 1;
+                refreshGui();
+                return;
+            }
+        }
+
+        for (Barrier previous : abstractGuiConfiguration.getPreviousBlocks()) {
+            if (e.getRawSlot() == previous.getIndex() && this.page > 1) {
+                this.page = page - 1;
+                refreshGui();
+                return;
+            }
+        }
+
+        for (Barrier close : abstractGuiConfiguration.getCloseBlocks()) {
+            if (e.getRawSlot() == close.getIndex()) {
+                inv.close();
+                return;
+            }
+        }
+
+        onInventoryClickCustom(e);
     }
 
 
