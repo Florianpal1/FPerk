@@ -157,7 +157,7 @@ block:
     material: NETHER_STAR
     title: "&eInformations"
     description:
-      - "&7Bienvenue dans la liste des entreprises !"
+      - "&7Bienvenue dans la liste des perk !"
       - "&7Survolez les différents boutons pour"
       - "&7explorer les fonctionnalités disponibles"
   '41':

@@ -1,15 +1,14 @@
 package fr.florianpal.fperk.objects;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
+import com.destroystokyo.paper.profile.PlayerProfile;
+import com.destroystokyo.paper.profile.ProfileProperty;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.lang.reflect.Field;
 import java.util.Map;
-
-import static java.util.UUID.randomUUID;
+import java.util.UUID;
 
 public class Perk {
 
@@ -53,24 +52,11 @@ public class Perk {
         ItemStack itemStack;
         if (material == Material.PLAYER_HEAD) {
             itemStack = new ItemStack(Material.PLAYER_HEAD, 1);
-            SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
-
-            GameProfile gameProfile = new GameProfile(randomUUID(), null);
-
-            Field field = null;
-            try {
-                field = skullMeta.getClass().getDeclaredField("profile");
-            } catch (NoSuchFieldException e) {
-                throw new RuntimeException(e);
-            }
-            gameProfile.getProperties().put("textures", new Property("textures", texture));
-
-            field.setAccessible(true); // We set as accessible to modify.
-            try {
-                field.set(skullMeta, gameProfile);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
+            PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID());
+            profile.setProperty(new ProfileProperty("textures", texture));
+            ItemStack head = new ItemStack(Material.PLAYER_HEAD);
+            SkullMeta skullMeta = (SkullMeta) head.getItemMeta();
+            skullMeta.setPlayerProfile(profile);
 
             itemStack.setItemMeta(skullMeta);
             itemStack.setAmount(1);

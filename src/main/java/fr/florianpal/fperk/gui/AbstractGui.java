@@ -95,6 +95,7 @@ public abstract class AbstractGui implements InventoryHolder, Listener, GuiInter
         initAction();
         initNext(referenceItem, referenceBarrier);
         initCustomObject();
+        openInventory();
     }
 
     protected void initBarrier() {

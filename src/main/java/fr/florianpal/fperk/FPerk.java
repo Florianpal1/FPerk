@@ -16,6 +16,8 @@ import fr.florianpal.fperk.placeholders.FPlaceholderExpansion;
 import fr.florianpal.fperk.queries.PlayerPerkQueries;
 import fr.florianpal.fperk.scheduler.LoadDataScheduler;
 import net.luckperms.api.LuckPerms;
+import net.luckperms.api.node.Node;
+import net.luckperms.api.node.NodeType;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -105,10 +107,24 @@ public class FPerk extends JavaPlugin {
         TaskChain<Map<UUID, List<PlayerPerk>>> chain = FPerk.newChain();
         chain.asyncFirst(() -> playerPerkCommandManager.getAllPlayerPerk()).syncLast(allPlayerPerks -> {
             for (var playerPerk : allPlayerPerks.entrySet()) {
-                for (var perk : playerPerk.getValue()) {
-                    if(perk.isEnabled()) {
 
-                        var perkCurrent = configurationManager.getPerkConfig().getPerks().get(perk.getPerk());
+                var offlinePlayer = Bukkit.getOfflinePlayer(playerPerk.getKey());
+                if (offlinePlayer == null) {
+                    continue;
+                }
+
+                for (var perk : playerPerk.getValue()) {
+
+                    var perkCurrent = configurationManager.getPerkConfig().getPerks().get(perk.getPerk());
+                    var user = luckPerms.getUserManager().getUser(playerPerk.getKey());
+                    var havePerm = true;
+
+                    if (user != null) {
+                        havePerm = user.getNodes().stream().filter(NodeType.PERMISSION::matches).map(NodeType.PERMISSION::cast).filter(Node::getValue).anyMatch(p -> p.getPermission().equals(perkCurrent.getPermission()));
+                    }
+
+                    if(perk.isEnabled() && havePerm) {
+
                         for (var comp : perkCurrent.getCompetences().entrySet()) {
                             perkPlayer.get(comp.getValue().getType()).add(playerPerk.getKey());
                         }
