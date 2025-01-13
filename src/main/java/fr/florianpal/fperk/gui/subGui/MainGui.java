@@ -24,7 +24,6 @@ import fr.florianpal.fperk.enums.StatusType;
 import fr.florianpal.fperk.gui.AbstractGui;
 import fr.florianpal.fperk.gui.GuiInterface;
 import fr.florianpal.fperk.languages.MessageKeys;
-import fr.florianpal.fperk.managers.VaultIntegrationManager;
 import fr.florianpal.fperk.managers.commandManagers.PlayerPerkCommandManager;
 import fr.florianpal.fperk.objects.Perk;
 import fr.florianpal.fperk.objects.PlayerPerk;
@@ -50,13 +49,10 @@ public class MainGui extends AbstractGui implements GuiInterface {
 
     private final PlayerPerkCommandManager playerPerkCommandManager;
 
-    private final VaultIntegrationManager vaultIntegrationManager;
-
     public MainGui(FPerk plugin, List<Perk> perks, List<PlayerPerk> playerPerks, Player player, Player showPlayer,int page) {
         super(plugin, plugin.getConfigurationManager().getMainGuiConfig(), player, showPlayer, page, perks, playerPerks);
         this.mainGuiConfig = plugin.getConfigurationManager().getMainGuiConfig();
         this.playerPerkCommandManager = plugin.getPlayerPerkCommandManager();
-        this.vaultIntegrationManager = plugin.getVaultIntegrationManager();
 
         String titleInv = mainGuiConfig.getNameGui();
         titleInv = titleInv.replace("{Page}", String.valueOf(this.page)).replace("{TotalPage}", String.valueOf(((this.perks.size() - 1) / mainGuiConfig.getPerkBlocks().size()) + 1));
@@ -133,8 +129,7 @@ public class MainGui extends AbstractGui implements GuiInterface {
                 int index = before + ((this.mainGuiConfig.getPerkBlocks().size() * this.page) - this.mainGuiConfig.getPerkBlocks().size());
                 Perk perk = perks.get(index);
 
-
-                boolean havePermission = plugin.getLuckPerms().getUserManager().getUser(player.getUniqueId()).getCachedData().getPermissionData().checkPermission(perk.getPermission()).asBoolean();
+                boolean havePermission = player.hasPermission(perk.getPermission());
                 if(!havePermission) {
                     CommandIssuer issuerTarget = commandManager.getCommandIssuer(showPlayer);
                     issuerTarget.sendInfo(MessageKeys.NO_PERMISSION, "{PerkName}", perk.getDisplayName());

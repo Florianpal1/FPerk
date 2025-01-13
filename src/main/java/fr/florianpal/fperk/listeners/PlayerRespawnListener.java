@@ -46,7 +46,7 @@ public class PlayerRespawnListener implements Listener {
             for (var playerPerk : playerPerks) {
                 var perk = perks.get(playerPerk.getPerk());
 
-                boolean havePermission = plugin.getLuckPerms().getUserManager().getUser(player.getUniqueId()).getCachedData().getPermissionData().checkPermission(perk.getPermission()).asBoolean();
+                boolean havePermission = player.hasPermission(perk.getPermission());
                 if (havePermission && playerPerk.isEnabled()) {
 
                     for (var competence : perk.getCompetences().entrySet()) {
