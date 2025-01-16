@@ -18,6 +18,7 @@ import fr.florianpal.fperk.scheduler.LoadDataScheduler;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.node.Node;
 import net.luckperms.api.node.NodeType;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -55,9 +56,12 @@ public class FPerk extends JavaPlugin {
 
     private LuckPerms luckPerms;
 
+    private Metrics metrics;
 
     @Override
     public void onEnable() {
+
+        metrics = new Metrics(this, 24472);
 
         taskChainFactory = BukkitTaskChainFactory.create(this);
 
