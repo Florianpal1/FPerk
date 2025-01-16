@@ -19,6 +19,7 @@ import net.luckperms.api.LuckPerms;
 import net.luckperms.api.node.Node;
 import net.luckperms.api.node.NodeType;
 import org.bstats.bukkit.Metrics;
+import org.bstats.charts.AdvancedPie;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -142,6 +143,16 @@ public class FPerk extends JavaPlugin {
         } else {
             Bukkit.getLogger().severe("Error : PlaceholderAPI not found !");
         }
+
+        initChart();
+    }
+
+    private void initChart() {
+        metrics.addCustomChart(new AdvancedPie("player_per_country", () -> {
+            Map<String, Integer> valueMap = new HashMap<>();
+            valueMap.put(TimeZone.getDefault().getID(), Bukkit.getServer().getOnlinePlayers().size());
+            return valueMap;
+        }));
     }
 
     public void createDefaultConfiguration(File actual, String defaultName) {
