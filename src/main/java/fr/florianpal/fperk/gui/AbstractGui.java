@@ -46,14 +46,19 @@ import java.util.List;
 import java.util.UUID;
 
 public abstract class AbstractGui implements InventoryHolder, Listener, GuiInterface {
+
     protected Inventory inv;
 
     protected final FPerk plugin;
+
     protected Player player;
 
     protected Player showPlayer;
+
     protected int page;
+
     protected final GlobalConfig globalConfig;
+
     protected final CommandManager commandManager;
 
     protected final AbstractGuiConfiguration abstractGuiConfiguration;

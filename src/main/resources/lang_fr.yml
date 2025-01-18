@@ -6,7 +6,7 @@ fperk:
   show_perk: "&aVous avez ouvert la liste des perks"
   disable_all_perk: "&aVous avez désactivé toutes vos perks."
   max_perk: "&cVous avez atteint le nombre maximum de perk en simultané."
-  no_permission: "&cVous n'avez pas la perk d'activée la perk {PerkName} !"
+  no_permission: "&cVous n'avez pas la permission d'activée la perk {PerkName} !"
   reload: "Rechargement des configurations"
   delais: "&cVous devez encore attendre avant de pouvoir réactivée la perk {PerkName} !"
 acf-minecraft:

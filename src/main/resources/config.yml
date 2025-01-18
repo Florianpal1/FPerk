@@ -1,5 +1,5 @@
-lang: "fr"
+lang: "en"
 
 status:
-  activated: "&2Activé"
-  desactived: "&cDésactivé"
+  activated: "&2Activated"
+  desactived: "&cDesactivated"

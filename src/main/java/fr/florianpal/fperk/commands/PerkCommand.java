@@ -68,7 +68,6 @@ public class PerkCommand extends BaseCommand {
         }).execute();
     }
 
-
     @Subcommand("admin toggle")
     @CommandPermission("fperk.admin.toggle")
     @Description("{@@fperk.reload_help_description}")
@@ -101,11 +100,5 @@ public class PerkCommand extends BaseCommand {
     @Description("{@@fperk.help_description}")
     public void doHelp(CommandSender sender, CommandHelp help) {
         help.showHelp();
-    }
-
-
-    public List<Perk> getPerkPerPermission(Player player, List<Perk> perks)  {
-
-        return perks.stream().filter(p -> player.hasPermission(p.getPermission())).toList();
     }
 }
