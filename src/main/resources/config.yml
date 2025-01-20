@@ -1,5 +1,5 @@
 lang: "en"
 
 status:
-  activated: "&2Activated"
-  desactived: "&cDesactivated"
+  enabled: "&2Enabled"
+  disabled: "&cDisabled"

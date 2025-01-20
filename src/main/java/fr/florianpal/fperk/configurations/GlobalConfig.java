@@ -33,8 +33,8 @@ public class GlobalConfig {
         status = new HashMap<>();
         lang = config.getString("lang");
 
-        status.put(StatusType.ACTIVATED, config.getString("status.activated"));
-        status.put(StatusType.DESACTIVED, config.getString("status.desactived"));
+        status.put(StatusType.ACTIVATED, config.getString("status.enabled"));
+        status.put(StatusType.DESACTIVED, config.getString("status.disabled"));
 
     }
 
