@@ -2,5 +2,5 @@ name: FPerk
 main: fr.florianpal.fperk.FPerk
 version: 1.0
 author: florianpal
-depend: [Luckperms]
+depend: [LuckPerms]
 api-version: 1.16
