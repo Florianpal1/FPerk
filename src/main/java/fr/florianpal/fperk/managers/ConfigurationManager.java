@@ -17,7 +17,7 @@
 package fr.florianpal.fperk.managers;
 
 import fr.florianpal.fperk.FPerk;
-import fr.florianpal.fperk.configurations.CompetenceConfig;
+import fr.florianpal.fperk.configurations.SkillConfig;
 import fr.florianpal.fperk.configurations.DatabaseConfig;
 import fr.florianpal.fperk.configurations.GlobalConfig;
 import fr.florianpal.fperk.configurations.PerkConfig;
@@ -37,7 +37,7 @@ public class ConfigurationManager {
     private final PerkConfig perkConfig = new PerkConfig();
     private FileConfiguration perkConfiguration;
 
-    private final CompetenceConfig competenceConfig = new CompetenceConfig();
+    private final SkillConfig competenceConfig = new SkillConfig();
     private FileConfiguration competenceConfiguration;
 
     private final MainGuiConfig mainGuiConfig = new MainGuiConfig();
@@ -67,8 +67,8 @@ public class ConfigurationManager {
         core.createDefaultConfiguration(perkFile, "perk.yml");
         perkConfiguration = YamlConfiguration.loadConfiguration(perkFile);
 
-        File competenceFile = new File(core.getDataFolder(), "competence.yml");
-        core.createDefaultConfiguration(competenceFile, "competence.yml");
+        File competenceFile = new File(core.getDataFolder(), "skill.yml");
+        core.createDefaultConfiguration(competenceFile, "skill.yml");
         competenceConfiguration = YamlConfiguration.loadConfiguration(competenceFile);
 
         File mainGuiFile = new File(core.getDataFolder(), "gui/mainGui.yml");
@@ -98,7 +98,7 @@ public class ConfigurationManager {
         return mainGuiConfig;
     }
 
-    public CompetenceConfig getCompetenceConfig() {
+    public SkillConfig getCompetenceConfig() {
         return competenceConfig;
     }
 }

@@ -17,7 +17,7 @@
 package fr.florianpal.fperk.configurations;
 
 import fr.florianpal.fperk.managers.ConfigurationManager;
-import fr.florianpal.fperk.objects.Competence;
+import fr.florianpal.fperk.objects.Skill;
 import fr.florianpal.fperk.objects.Perk;
 import org.bukkit.Material;
 import org.bukkit.configuration.Configuration;
@@ -49,9 +49,9 @@ public class PerkConfig {
             var permissionBypass = config.getString(BASE + POINT + index + POINT + "permissionBypass", null);
             var texture = config.getString(BASE + POINT + index + POINT + "texture", "");
 
-            Map<String, Competence> competenceMap = new HashMap<>();
+            Map<String, Skill> competenceMap = new HashMap<>();
             for(var competence : competences) {
-                competenceMap.put(competence, configurationManager.getCompetenceConfig().getCompetences().get(competence));
+                competenceMap.put(competence, configurationManager.getCompetenceConfig().getSkills().get(competence));
             }
 
             perks.put(index,

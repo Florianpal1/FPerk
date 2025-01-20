@@ -4,7 +4,7 @@ import fr.florianpal.fperk.enums.EffectType;
 
 import java.util.List;
 
-public class Competence {
+public class Skill {
 
     private final String id;
 
@@ -16,7 +16,7 @@ public class Competence {
 
     private final float level;
 
-    public Competence(String id, List<String> displayName, EffectType type, String effect, float level) {
+    public Skill(String id, List<String> displayName, EffectType type, String effect, float level) {
         this.id = id;
         this.displayName = displayName;
         this.type = type;
