@@ -7,25 +7,25 @@ competences:
     level: 1
   "regeneration":
     displayName:
-     - "Regénération"
+     - "Regeneration"
     type: EFFECT
     effect: "regeneration"
     level: 2
   "heal":
     displayName:
-     - "Soin"
+     - "Heal"
     type: EFFECT
     effect: "instant_heal"
     level: 1
   "nightvision":
     displayName:
-     - "Vision Nocturne"
+     - "Night Vision"
     type: EFFECT
     effect: "night_vision"
     level: 1
   "glowing":
     displayName:
-     - "Brillance"
+     - "Glowing"
     type: EFFECT
     effect: "glowing"
     level: 1
@@ -59,10 +59,10 @@ competences:
     type: ANTI_KNOCKBACK
     effect: ""
     level: 1
-  "aspirator":
+  "vacuum":
     displayName:
-      - "aspirator"
-    type: ASPIRATOR
+      - "Vacuum"
+    type: VACCUM
     effect: ""
     level: 1
   "second_chance":

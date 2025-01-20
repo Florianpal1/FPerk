@@ -27,5 +27,5 @@ public enum EffectType {
 
     BROKEN_FALL,
 
-    ASPIRATOR,
+    VACCUM,
 }

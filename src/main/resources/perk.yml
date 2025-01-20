@@ -9,10 +9,9 @@ perks:
     time: 500 # In MilliSeconds
     persistant: false
     permission: "fperk.fly"
-    bannedWorld:
-      - "sunpeche"
+    bannedWorld: []
   "heal":
-    displayName: "Soin"
+    displayName: "Heal"
     material: "BEACON"
     competences:
       - "heal"
@@ -23,7 +22,7 @@ perks:
     persistant: false
     permission: "fperk.fly"
   "nightvision":
-    displayName: "Vision Nocturne"
+    displayName: "Night Vision"
     material: "ENDER_EYE"
     competences:
       - "nightvision"
@@ -33,7 +32,7 @@ perks:
     persistant: false
     permission: "fperk.nightvision"
   "glowing":
-    displayName: "Brillance"
+    displayName: "Glowing"
     material: "GLOWSTONE_DUST"
     competences:
       - "glowing"
@@ -93,10 +92,10 @@ perks:
     persistant: true
     permission: "fperk.antiknockback"
   "aspirator":
-    displayName: "Aspirator"
+    displayName: "Vacuum"
     material: "ENDER_PEARL"
     competences:
-      - "aspirator"
+      - "vacuum"
     delais: 500 # In MilliSeconds
     ignoreDelais: true
     time: 500 # In MilliSeconds

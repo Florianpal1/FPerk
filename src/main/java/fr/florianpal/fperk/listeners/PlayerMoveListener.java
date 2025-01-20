@@ -10,13 +10,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.inventory.ItemStack;
 
-import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 
-import static fr.florianpal.fperk.enums.EffectType.ASPIRATOR;
+import static fr.florianpal.fperk.enums.EffectType.VACCUM;
 import static fr.florianpal.fperk.enums.EffectType.CURE_EFFECT;
 
 public class PlayerMoveListener implements Listener {
@@ -30,7 +28,7 @@ public class PlayerMoveListener implements Listener {
     public void onMove(PlayerMoveEvent event) {
 
         Player player = event.getPlayer();
-        if (plugin.isPerkActive(player.getUniqueId(), ASPIRATOR)) {
+        if (plugin.isPerkActive(player.getUniqueId(), VACCUM)) {
             List<Entity> entities = event.getTo().getNearbyEntities(3, 3, 3).stream().toList();
             for (Entity entity : entities) {
                 if (entity instanceof Item item && (havePlaceInInventory(player, item) && item.canPlayerPickup())) {
