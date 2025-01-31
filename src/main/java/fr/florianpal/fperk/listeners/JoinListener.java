@@ -50,54 +50,54 @@ public class JoinListener implements Listener {
                 boolean havePermission = player.hasPermission(perk.getPermission());
                 if (havePermission && playerPerk.isEnabled()) {
 
-                    for (var competence : perk.getCompetences().entrySet()) {
+                    for (var skill : perk.getSkills().entrySet()) {
                         long time = new Date().getTime() - playerPerk.getLastEnabled().getTime();
                         long secs = (time) / 1000;
 
-                        switch (competence.getValue().getType()) {
+                        switch (skill.getValue().getType()) {
                             case EFFECT -> {
-                                var potionEffectType = PotionEffectType.getByName(competence.getValue().getEffect());
+                                var potionEffectType = PotionEffectType.getByName(skill.getValue().getEffect());
                                 if (potionEffectType != null) {
-                                    player.addPotionEffect(new PotionEffect(potionEffectType, -1, (int) competence.getValue().getLevel(), false, false));
+                                    player.addPotionEffect(new PotionEffect(potionEffectType, -1, (int) skill.getValue().getLevel(), false, false));
                                 }
                             }
                             case FLY -> {
                                 EffectUtils.enabledFly(player, true);
-                                plugin.addPerkActive(player.getUniqueId(), competence.getValue().getType());
+                                plugin.addPerkActive(player.getUniqueId(), skill.getValue().getType());
 
                                 if (!perk.isPersistant()) {
                                     if (secs > 0) {
                                         Bukkit.getScheduler().runTaskLater(plugin, () -> {
                                             EffectUtils.enabledFly(player, false);
-                                            plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
+                                            plugin.removePerkActive(player.getUniqueId(), skill.getValue().getType());
 
                                             playerPerk.setEnabled(false);
                                             playerPerkCommandManager.updatePlayerPerk(playerPerk);
                                         }, secs * 20L);
                                     } else {
                                         EffectUtils.enabledFly(player, false);
-                                        plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
+                                        plugin.removePerkActive(player.getUniqueId(), skill.getValue().getType());
                                         playerPerkCommandManager.updatePlayerPerk(playerPerk);
                                     }
                                 }
                             }
                             case FLY_SPEED -> {
-                                player.setFlySpeed(competence.getValue().getLevel());
-                                plugin.addPerkActive(player.getUniqueId(), competence.getValue().getType());
+                                player.setFlySpeed(skill.getValue().getLevel());
+                                plugin.addPerkActive(player.getUniqueId(), skill.getValue().getType());
 
                                 if (!perk.isPersistant()) {
                                     if (secs > 0) {
                                         Bukkit.getScheduler().runTaskLater(plugin, () -> {
                                             EffectUtils.resetFlySpeed(player);
 
-                                            plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
+                                            plugin.removePerkActive(player.getUniqueId(), skill.getValue().getType());
 
                                             playerPerk.setEnabled(false);
                                             playerPerkCommandManager.updatePlayerPerk(playerPerk);
                                         }, secs * 20L);
                                     } else {
                                         EffectUtils.resetFlySpeed(player);
-                                        plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
+                                        plugin.removePerkActive(player.getUniqueId(), skill.getValue().getType());
 
                                         playerPerk.setEnabled(false);
                                         playerPerkCommandManager.updatePlayerPerk(playerPerk);
@@ -105,17 +105,17 @@ public class JoinListener implements Listener {
                                 }
                             }
                             default -> {
-                                plugin.addPerkActive(player.getUniqueId(), competence.getValue().getType());
+                                plugin.addPerkActive(player.getUniqueId(), skill.getValue().getType());
                                 if(!perk.isPersistant()) {
                                     if(secs > 0) {
                                         Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                                            plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
+                                            plugin.removePerkActive(player.getUniqueId(), skill.getValue().getType());
 
                                             playerPerk.setEnabled(false);
                                             playerPerkCommandManager.updatePlayerPerk(playerPerk);
                                         }, secs * 20L);
                                     } else {
-                                        plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
+                                        plugin.removePerkActive(player.getUniqueId(), skill.getValue().getType());
 
                                         playerPerk.setEnabled(false);
                                         playerPerkCommandManager.updatePlayerPerk(playerPerk);
@@ -125,10 +125,10 @@ public class JoinListener implements Listener {
                         }
                     }
                 } else {
-                    for (var competence : perk.getCompetences().entrySet()) {
-                        switch (competence.getValue().getType()) {
+                    for (var skill : perk.getSkills().entrySet()) {
+                        switch (skill.getValue().getType()) {
                             case EFFECT -> {
-                                var potionEffectType = PotionEffectType.getByName(competence.getValue().getEffect());
+                                var potionEffectType = PotionEffectType.getByName(skill.getValue().getEffect());
                                 if (potionEffectType != null) {
                                     player.removePotionEffect(potionEffectType);
                                     Bukkit.getScheduler().runTaskLater(plugin, () -> player.removePotionEffect(potionEffectType), 80L);
@@ -136,13 +136,13 @@ public class JoinListener implements Listener {
                             }
                             case FLY -> {
                                 EffectUtils.enabledFly(player, false);
-                                plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
+                                plugin.removePerkActive(player.getUniqueId(), skill.getValue().getType());
                             }
                             case FLY_SPEED -> {
                                 player.setFlySpeed(0.1F);
-                                plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
+                                plugin.removePerkActive(player.getUniqueId(), skill.getValue().getType());
                             }
-                            default -> plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
+                            default -> plugin.removePerkActive(player.getUniqueId(), skill.getValue().getType());
                         }
                     }
 

@@ -130,7 +130,7 @@ public class FPerk extends JavaPlugin {
 
                     if(perk.isEnabled() && havePerm) {
 
-                        for (var comp : perkCurrent.getCompetences().entrySet()) {
+                        for (var comp : perkCurrent.getSkills().entrySet()) {
                             perkPlayer.get(comp.getValue().getType()).add(playerPerk.getKey());
                         }
                     }

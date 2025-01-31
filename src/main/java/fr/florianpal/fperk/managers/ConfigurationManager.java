@@ -37,8 +37,8 @@ public class ConfigurationManager {
     private final PerkConfig perkConfig = new PerkConfig();
     private FileConfiguration perkConfiguration;
 
-    private final SkillConfig competenceConfig = new SkillConfig();
-    private FileConfiguration competenceConfiguration;
+    private final SkillConfig skillConfig = new SkillConfig();
+    private FileConfiguration skillConfiguration;
 
     private final MainGuiConfig mainGuiConfig = new MainGuiConfig();
     private FileConfiguration mainGuiConfiguration;
@@ -67,15 +67,15 @@ public class ConfigurationManager {
         core.createDefaultConfiguration(perkFile, "perk.yml");
         perkConfiguration = YamlConfiguration.loadConfiguration(perkFile);
 
-        File competenceFile = new File(core.getDataFolder(), "skill.yml");
-        core.createDefaultConfiguration(competenceFile, "skill.yml");
-        competenceConfiguration = YamlConfiguration.loadConfiguration(competenceFile);
+        File skillFile = new File(core.getDataFolder(), "skill.yml");
+        core.createDefaultConfiguration(skillFile, "skill.yml");
+        skillConfiguration = YamlConfiguration.loadConfiguration(skillFile);
 
         File mainGuiFile = new File(core.getDataFolder(), "gui/mainGui.yml");
         core.createDefaultConfiguration(mainGuiFile, "gui/mainGui.yml");
         mainGuiConfiguration = YamlConfiguration.loadConfiguration(mainGuiFile);
 
-        competenceConfig.load(competenceConfiguration);
+        skillConfig.load(skillConfiguration);
         perkConfig.load(perkConfiguration, this);
         mainGuiConfig.load(mainGuiConfiguration);
         globalConfig.load(globalConfiguration);
@@ -98,7 +98,7 @@ public class ConfigurationManager {
         return mainGuiConfig;
     }
 
-    public SkillConfig getCompetenceConfig() {
-        return competenceConfig;
+    public SkillConfig getSkillConfig() {
+        return skillConfig;
     }
 }

@@ -41,17 +41,17 @@ public class LoadDataScheduler implements Runnable {
                     boolean havePermission = player.hasPermission(perk.getPermission());
                     if ((player == null || havePermission && playerPerk.isEnabled())) {
 
-                        for (var competence : perk.getCompetences().entrySet()) {
-                            switch (competence.getValue().getType()) {
+                        for (var skill : perk.getSkills().entrySet()) {
+                            switch (skill.getValue().getType()) {
                                 case FLY ->
-                                        plugin.addPerkActive(playerPerk.getPlayerUUID(), competence.getValue().getType());
+                                        plugin.addPerkActive(playerPerk.getPlayerUUID(), skill.getValue().getType());
                             }
                         }
                     } else {
-                        for (var competence : perk.getCompetences().entrySet()) {
-                            switch (competence.getValue().getType()) {
+                        for (var skill : perk.getSkills().entrySet()) {
+                            switch (skill.getValue().getType()) {
                                 case FLY ->
-                                        plugin.removePerkActive(playerPerk.getPlayerUUID(), competence.getValue().getType());
+                                        plugin.removePerkActive(playerPerk.getPlayerUUID(), skill.getValue().getType());
                             }
                         }
                     }

@@ -84,11 +84,11 @@ public class MainGui extends AbstractGui implements GuiInterface {
         for (String desc : mainGuiConfig.getPerkDescription()) {
             desc = desc.replace("{Name}", perk.getDisplayName());
 
-            if (desc.contains("competences")) {
-                if (perk.getCompetences().isEmpty()) {
-                    listDescription.add(desc.replace("{competences}", ""));
+            if (desc.contains("skills")) {
+                if (perk.getSkills().isEmpty()) {
+                    listDescription.add(desc.replace("{skills}", ""));
                 } else {
-                    for (var line : perk.getCompetences().entrySet()) {
+                    for (var line : perk.getSkills().entrySet()) {
 
                         for (String displayName : line.getValue().getDisplayName()) {
                             listDescription.add(FormatUtils.format(displayName));

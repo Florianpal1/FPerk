@@ -1,14 +1,14 @@
 gui:
   size: 45
   name: "Perk (Page {Page}/{TotalPage})"
-competenceFormat: "- {DisplayName}"
+skillFormat: "- {DisplayName}"
 perk:
   title: "&3Perk: &a{Name}"
   description:
     - "&3Nom: &a{Name}"
-    - "Est activé : &a{IsEnabled}"
-    - "Compétences :"
-    - "{competences}"
+    - "Is Enabled : &a{IsEnabled}"
+    - "Skills :"
+    - "{skills}"
 block:
   '0':
     utility: barrier
@@ -145,12 +145,12 @@ block:
   '39':
     utility: previous
     material: ARROW
-    title: "&aPage précédente"
+    title: "&5Previous Page"
     description:
-      - "&7Cliquez ici pour retourner à la page précédente"
+      - "&eClick here to return to previous page"
     replacement:
       material: AIR
-      title: " "
+      title: "-"
       description: {}
   '40':
     utility: barrier
@@ -163,12 +163,12 @@ block:
   '41':
     utility: next
     material: ARROW
-    title: "&aPage suivante"
+    title: "&5Next Page"
     description:
-      - "&7Cliquez ici pour aller sur la page suivante"
+      - "&eClick here to go to the next page"
     replacement:
       material: AIR
-      title: " "
+      title: "-"
       description: {}
   '42':
     utility: barrier

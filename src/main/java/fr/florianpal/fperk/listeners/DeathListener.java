@@ -16,7 +16,7 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.UUID;
 
 import static fr.florianpal.fperk.enums.EffectType.SECOND_CHANCE;
-import static fr.florianpal.fperk.utils.EffectUtils.getPerkWithCompetence;
+import static fr.florianpal.fperk.utils.EffectUtils.getPerkWithSkill;
 
 public class DeathListener implements Listener {
 
@@ -59,7 +59,7 @@ public class DeathListener implements Listener {
 
             TaskChain<PlayerPerk> playerPerkTaskChain = FPerk.newChain();
             playerPerkTaskChain.asyncFirst(() -> plugin.getPlayerPerkCommandManager().getPlayerPerk(player)).sync(playerPerks -> {
-                Perk perk = getPerkWithCompetence(plugin, SECOND_CHANCE);
+                Perk perk = getPerkWithSkill(plugin, SECOND_CHANCE);
                 PlayerPerk playerPerk = playerPerks.stream().filter(p -> p.getPerk().equals(perk.getId())).findFirst().get();
                 playerPerk.setEnabled(false);
                 plugin.getPlayerPerkCommandManager().updatePlayerPerk(playerPerk);

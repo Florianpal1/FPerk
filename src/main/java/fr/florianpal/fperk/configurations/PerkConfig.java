@@ -40,7 +40,7 @@ public class PerkConfig {
         for (String index : config.getConfigurationSection(BASE).getKeys(false)) {
             var displayName = config.getString(BASE + POINT + index + POINT + "displayName");
             var material = config.getString(BASE + POINT + index + POINT + "material");
-            var competences = config.getStringList(BASE + POINT + index + POINT + "competences");
+            var skills = config.getStringList(BASE + POINT + index + POINT + "skills");
             var delais = config.getInt(BASE + POINT + index + POINT + "delais");
             var ignoreDelais = config.getBoolean(BASE + POINT + index + POINT + "ignoreDelais");
             var time = config.getInt(BASE + POINT + index + POINT + "time");
@@ -49,9 +49,9 @@ public class PerkConfig {
             var permissionBypass = config.getString(BASE + POINT + index + POINT + "permissionBypass", null);
             var texture = config.getString(BASE + POINT + index + POINT + "texture", "");
 
-            Map<String, Skill> competenceMap = new HashMap<>();
-            for(var competence : competences) {
-                competenceMap.put(competence, configurationManager.getCompetenceConfig().getSkills().get(competence));
+            Map<String, Skill> skillMap = new HashMap<>();
+            for(var skill : skills) {
+                skillMap.put(skill, configurationManager.getSkillConfig().getSkills().get(skill));
             }
 
             perks.put(index,
@@ -59,7 +59,7 @@ public class PerkConfig {
                             index,
                             displayName,
                             Material.valueOf(material),
-                            competenceMap,
+                            skillMap,
                             delais,
                             ignoreDelais,
                             time,

@@ -2,7 +2,7 @@ perks:
   "fly":
     displayName: "Fly"
     material: "ELYTRA"
-    competences:
+    skills:
       - "fly"
     delais: 500 # In MilliSeconds
     ignoreDelais: true
@@ -13,7 +13,7 @@ perks:
   "heal":
     displayName: "Heal"
     material: "BEACON"
-    competences:
+    skills:
       - "heal"
       - "regeneration"
     delais: 500 # In MilliSeconds
@@ -24,7 +24,7 @@ perks:
   "nightvision":
     displayName: "Night Vision"
     material: "ENDER_EYE"
-    competences:
+    skills:
       - "nightvision"
     delais: 500 # In MilliSeconds
     ignoreDelais: true
@@ -34,7 +34,7 @@ perks:
   "glowing":
     displayName: "Glowing"
     material: "GLOWSTONE_DUST"
-    competences:
+    skills:
       - "glowing"
     delais: 500 # In MilliSeconds
     ignoreDelais: true
@@ -44,7 +44,7 @@ perks:
   "keep_inventory":
     displayName: "Keep Inventory"
     material: "CHEST"
-    competences:
+    skills:
       - "keep_inventory"
     delais: 500 # In MilliSeconds
     ignoreDelais: true
@@ -54,7 +54,7 @@ perks:
   "keep_experience":
     displayName: "Keep Experience"
     material: "EXPERIENCE_BOTTLE"
-    competences:
+    skills:
       - "keep_experience"
     delais: 500 # In MilliSeconds
     ignoreDelais: true
@@ -64,7 +64,7 @@ perks:
   "harvest":
     displayName: "Harvest"
     material: "EXPERIENCE_BOTTLE"
-    competences:
+    skills:
       - "harvest"
     delais: 500 # In MilliSeconds
     ignoreDelais: true
@@ -74,7 +74,7 @@ perks:
   "auto_smelt":
     displayName: "Auto Smelt"
     material: "IRON_INGOT"
-    competences:
+    skills:
       - "auto_smelt"
     delais: 500 # In MilliSeconds
     ignoreDelais: true
@@ -84,7 +84,7 @@ perks:
   "auto_knockback":
     displayName: "Auto KnockBack"
     material: "IRON_INGOT"
-    competences:
+    skills:
       - "auto_knockback"
     delais: 500 # In MilliSeconds
     ignoreDelais: true
@@ -94,7 +94,7 @@ perks:
   "aspirator":
     displayName: "Vacuum"
     material: "ENDER_PEARL"
-    competences:
+    skills:
       - "vacuum"
     delais: 500 # In MilliSeconds
     ignoreDelais: true
@@ -104,7 +104,7 @@ perks:
   "second_chance":
     displayName: "Seconde chance"
     material: "TOTEM_OF_UNDYING"
-    competences:
+    skills:
       - "second_chance"
     delais: 500 # In MilliSeconds
     ignoreDelais: true

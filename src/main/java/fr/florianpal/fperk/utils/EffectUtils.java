@@ -38,10 +38,10 @@ public class EffectUtils {
     }
 
     public static void disabledPerk(FPerk plugin, Player player, Perk perk) {
-        for (var competence : perk.getCompetences().entrySet()) {
-            switch (competence.getValue().getType()) {
+        for (var skill : perk.getSkills().entrySet()) {
+            switch (skill.getValue().getType()) {
                 case EFFECT -> {
-                    var potionEffectType = PotionEffectType.getByName(competence.getValue().getEffect());
+                    var potionEffectType = PotionEffectType.getByName(skill.getValue().getEffect());
                     if (potionEffectType != null) {
                         player.removePotionEffect(potionEffectType);
                     }
@@ -49,18 +49,18 @@ public class EffectUtils {
                 case FLY -> EffectUtils.enabledFly(player, false);
                 case FLY_SPEED -> resetFlySpeed(player);
             }
-            plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
+            plugin.removePerkActive(player.getUniqueId(), skill.getValue().getType());
         }
     }
 
     public static void enabledPerk(FPerk plugin, Player player, PlayerPerk playerPerk, Perk perk) {
-        for (var competence : perk.getCompetences().entrySet()) {
-            switch (competence.getValue().getType()) {
+        for (var skill : perk.getSkills().entrySet()) {
+            switch (skill.getValue().getType()) {
                 case EFFECT -> {
 
-                    var potionEffectType = PotionEffectType.getByName(competence.getValue().getEffect());
+                    var potionEffectType = PotionEffectType.getByName(skill.getValue().getEffect());
                     if (potionEffectType != null) {
-                        player.addPotionEffect(new PotionEffect(potionEffectType, -1, (int) competence.getValue().getLevel(), false, false));
+                        player.addPotionEffect(new PotionEffect(potionEffectType, -1, (int) skill.getValue().getLevel(), false, false));
                     }
                     if (!perk.isPersistant()) {
                         Bukkit.getScheduler().runTaskLater(plugin, () -> {
@@ -90,15 +90,15 @@ public class EffectUtils {
                     }
                 }
                 case FLY_SPEED -> {
-                    player.setFlySpeed(competence.getValue().getLevel());
-                    plugin.addPerkActive(player.getUniqueId(), competence.getValue().getType());
+                    player.setFlySpeed(skill.getValue().getLevel());
+                    plugin.addPerkActive(player.getUniqueId(), skill.getValue().getType());
 
                     if (!perk.isPersistant()) {
 
                         Bukkit.getScheduler().runTaskLater(plugin, () -> {
                             resetFlySpeed(player);
 
-                            plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
+                            plugin.removePerkActive(player.getUniqueId(), skill.getValue().getType());
                             playerPerk.setEnabled(false);
                             plugin.getPlayerPerkCommandManager().updatePlayerPerk(playerPerk);
                         }, perk.getTime() * 20L);
@@ -110,10 +110,10 @@ public class EffectUtils {
                 }
                 default -> {
 
-                    plugin.addPerkActive(player.getUniqueId(), competence.getValue().getType());
+                    plugin.addPerkActive(player.getUniqueId(), skill.getValue().getType());
                     if (!perk.isPersistant()) {
                         Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                            plugin.removePerkActive(player.getUniqueId(), competence.getValue().getType());
+                            plugin.removePerkActive(player.getUniqueId(), skill.getValue().getType());
 
                             playerPerk.setEnabled(false);
                             plugin.getPlayerPerkCommandManager().updatePlayerPerk(playerPerk);
@@ -127,7 +127,7 @@ public class EffectUtils {
     public static void checkPerk(FPerk plugin, Player player) {
         for(var perkActive : plugin.getAllPerkActive().entrySet()) {
             if(perkActive.getValue().contains(player.getUniqueId())) {
-                Perk perk = getPerkWithCompetence(plugin, perkActive.getKey());
+                Perk perk = getPerkWithSkill(plugin, perkActive.getKey());
                 switch (perkActive.getKey()) {
                     case FLY -> {
                         if (perk.isPersistant() && player.hasPermission(perk.getPermission())) {
@@ -139,16 +139,16 @@ public class EffectUtils {
                         }
                     }
                     case EFFECT -> {
-                        for(Skill competence : perk.getCompetences().values()) {
-                            var potionEffectType = PotionEffectType.getByName(competence.getEffect());
+                        for(Skill skill : perk.getSkills().values()) {
+                            var potionEffectType = PotionEffectType.getByName(skill.getEffect());
                             if (potionEffectType != null) {
-                                player.addPotionEffect(new PotionEffect(potionEffectType, -1, (int) competence.getLevel(), false, false));
+                                player.addPotionEffect(new PotionEffect(potionEffectType, -1, (int) skill.getLevel(), false, false));
                             }
                         }
                     }
                     case FLY_SPEED -> {
-                        for(Skill competence : perk.getCompetences().values()) {
-                            player.setFlySpeed(competence.getLevel());
+                        for(Skill skill : perk.getSkills().values()) {
+                            player.setFlySpeed(skill.getLevel());
                         }
                     }
                 }
@@ -156,11 +156,11 @@ public class EffectUtils {
         }
     }
 
-    public static Perk getPerkWithCompetence(FPerk plugin, EffectType effectType) {
+    public static Perk getPerkWithSkill(FPerk plugin, EffectType effectType) {
         List<Perk> perks = plugin.getConfigurationManager().getPerkConfig().getPerks().values().stream().toList();
         for (Perk perk : perks) {
-            Optional<Skill> competence = perk.getCompetences().values().stream().filter(c -> c.getType().equals(effectType)).findFirst();
-            if (competence.isPresent()) {
+            Optional<Skill> skill = perk.getSkills().values().stream().filter(c -> c.getType().equals(effectType)).findFirst();
+            if (skill.isPresent()) {
                 return perk;
             }
         }

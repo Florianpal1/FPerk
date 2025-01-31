@@ -18,7 +18,7 @@ public class Perk {
 
     private final Material material;
 
-    private final Map<String, Skill> competences;
+    private final Map<String, Skill> skills;
 
     private final int delais;
 
@@ -34,11 +34,11 @@ public class Perk {
 
     private final String texture;
 
-    public Perk(String id, String displayName, Material material, Map<String, Skill> competences, int delais, boolean ignoreDelais, int time, boolean persistant, String permission, String permissionBypass, String texture) {
+    public Perk(String id, String displayName, Material material, Map<String, Skill> skills, int delais, boolean ignoreDelais, int time, boolean persistant, String permission, String permissionBypass, String texture) {
         this.id = id;
         this.displayName = displayName;
         this.material = material;
-        this.competences = competences;
+        this.skills = skills;
         this.delais = delais;
         this.ignoreDelais = ignoreDelais;
         this.time = time;
@@ -70,8 +70,8 @@ public class Perk {
         return id;
     }
 
-    public Map<String, Skill> getCompetences() {
-        return competences;
+    public Map<String, Skill> getSkills() {
+        return skills;
     }
 
     public int getDelais() {

@@ -33,7 +33,7 @@ public class MainGuiConfig extends AbstractGuiConfiguration {
 
     private List<String> perkDescription;
 
-    private String competenceFormat;
+    private String skillFormat;
 
     public void load(Configuration config) {
         barrierBlocks = new ArrayList<>();
@@ -115,7 +115,7 @@ public class MainGuiConfig extends AbstractGuiConfiguration {
         perkTitle = config.getString("perk.title");
         perkDescription = config.getStringList("perk.description");
 
-        competenceFormat = config.getString("competenceFormat");
+        skillFormat = config.getString("skillFormat");
     }
 
     public List<Integer> getPerkBlocks() {
@@ -130,7 +130,7 @@ public class MainGuiConfig extends AbstractGuiConfiguration {
         return perkDescription;
     }
 
-    public String getCompetenceFormat() {
-        return competenceFormat;
+    public String getSkillFormat() {
+        return skillFormat;
     }
 }
