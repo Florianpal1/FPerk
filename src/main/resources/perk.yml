@@ -2,7 +2,7 @@ perks:
   "fly":
     displayName: "Fly"
     material: "ELYTRA"
-    skills:
+    skills: # Skills (see skill.yml)
       - "fly"
     delais: 500 # In MilliSeconds
     ignoreDelais: true
@@ -13,7 +13,7 @@ perks:
   "heal":
     displayName: "Heal"
     material: "BEACON"
-    skills:
+    skills: # Skills (see skill.yml)
       - "heal"
       - "regeneration"
     delais: 500 # In MilliSeconds
@@ -34,7 +34,7 @@ perks:
   "glowing":
     displayName: "Glowing"
     material: "GLOWSTONE_DUST"
-    skills:
+    skills: # Skills (see skill.yml)
       - "glowing"
     delais: 500 # In MilliSeconds
     ignoreDelais: true
@@ -44,7 +44,7 @@ perks:
   "keep_inventory":
     displayName: "Keep Inventory"
     material: "CHEST"
-    skills:
+    skills: # Skills (see skill.yml)
       - "keep_inventory"
     delais: 500 # In MilliSeconds
     ignoreDelais: true
@@ -54,7 +54,7 @@ perks:
   "keep_experience":
     displayName: "Keep Experience"
     material: "EXPERIENCE_BOTTLE"
-    skills:
+    skills: # Skills (see skill.yml)
       - "keep_experience"
     delais: 500 # In MilliSeconds
     ignoreDelais: true
@@ -64,7 +64,7 @@ perks:
   "harvest":
     displayName: "Harvest"
     material: "EXPERIENCE_BOTTLE"
-    skills:
+    skills: # Skills (see skill.yml)
       - "harvest"
     delais: 500 # In MilliSeconds
     ignoreDelais: true
@@ -74,7 +74,7 @@ perks:
   "auto_smelt":
     displayName: "Auto Smelt"
     material: "IRON_INGOT"
-    skills:
+    skills: # Skills (see skill.yml)
       - "auto_smelt"
     delais: 500 # In MilliSeconds
     ignoreDelais: true
@@ -84,17 +84,17 @@ perks:
   "auto_knockback":
     displayName: "Auto KnockBack"
     material: "IRON_INGOT"
-    skills:
+    skills: # Skills (see skill.yml)
       - "auto_knockback"
     delais: 500 # In MilliSeconds
     ignoreDelais: true
     time: 500 # In MilliSeconds
     persistant: true
     permission: "fperk.antiknockback"
-  "aspirator":
+  "vacuum":
     displayName: "Vacuum"
     material: "ENDER_PEARL"
-    skills:
+    skills: # Skills (see skill.yml)
       - "vacuum"
     delais: 500 # In MilliSeconds
     ignoreDelais: true
@@ -102,9 +102,9 @@ perks:
     persistant: true
     permission: "fperk.aspirator"
   "second_chance":
-    displayName: "Seconde chance"
+    displayName: "Second chance"
     material: "TOTEM_OF_UNDYING"
-    skills:
+    skills: # Skills (see skill.yml)
       - "second_chance"
     delais: 500 # In MilliSeconds
     ignoreDelais: true
