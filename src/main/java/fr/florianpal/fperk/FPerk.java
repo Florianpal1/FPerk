@@ -25,6 +25,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -76,7 +77,12 @@ public class FPerk extends JavaPlugin {
 
         vaultIntegrationManager = new VaultIntegrationManager(this);
 
-        databaseManager = new DatabaseManager(this);
+        try {
+            databaseManager = new DatabaseManager(this);
+        } catch (SQLException e) {
+            getLogger().severe(e.getMessage());
+            Bukkit.getPluginManager().disablePlugin(this);
+        }
 
         playerPerkQueries = new PlayerPerkQueries(this);
 

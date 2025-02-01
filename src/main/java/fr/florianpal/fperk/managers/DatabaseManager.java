@@ -34,7 +34,7 @@ public class DatabaseManager {
 
     private Connection connection;
 
-    public DatabaseManager(FPerk plugin) {
+    public DatabaseManager(FPerk plugin) throws SQLException {
         this.plugin = plugin;
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(  plugin.getConfigurationManager().getDatabase().getUrl() );
@@ -44,6 +44,8 @@ public class DatabaseManager {
         config.addDataSourceProperty( "prepStmtCacheSize" , "250" );
         config.addDataSourceProperty( "prepStmtCacheSqlLimit" , "2048" );
         ds = new HikariDataSource(config);
+
+        connection = ds.getConnection();
     }
 
 
