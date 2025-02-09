@@ -1,5 +1,5 @@
 database:
   type: SQLite
-  url: "jdbc:sqlite:database.db"
+  url: "jdbc:sqlite:plugins/FPerk/database.db"
   user: "root"
   password: ""
