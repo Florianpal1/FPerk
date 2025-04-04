@@ -67,7 +67,7 @@ public class BlockBreakListener implements Listener {
                 Material ore = minerals.get(material);
                 Material ingot = ingots.get(ore);
                 int count = countMineral(block, ore);
-                count = applyLuck(event.getPlayer().getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS), count);
+                count = applyLuck(event.getPlayer().getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.FORTUNE), count);
 
                 event.setDropItems(false);
                 event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(ingot, count));
