@@ -19,11 +19,11 @@ public class EffectUtils {
 
     public static void removeAllNegativeEffect(Player player) {
         player.removePotionEffect(PotionEffectType.BLINDNESS);
-        player.removePotionEffect(PotionEffectType.CONFUSION);
-        player.removePotionEffect(PotionEffectType.HARM);
+        player.removePotionEffect(PotionEffectType.NAUSEA);
+        player.removePotionEffect(PotionEffectType.INSTANT_DAMAGE);
         player.removePotionEffect(PotionEffectType.POISON);
-        player.removePotionEffect(PotionEffectType.SLOW);
-        player.removePotionEffect(PotionEffectType.SLOW_DIGGING);
+        player.removePotionEffect(PotionEffectType.SLOWNESS);
+        player.removePotionEffect(PotionEffectType.MINING_FATIGUE);
         player.removePotionEffect(PotionEffectType.WEAKNESS);
         player.removePotionEffect(PotionEffectType.WITHER);
     }
