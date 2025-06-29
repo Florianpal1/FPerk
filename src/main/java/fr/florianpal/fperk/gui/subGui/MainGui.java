@@ -76,6 +76,10 @@ public class MainGui extends AbstractGui implements GuiInterface {
         ItemStack item = perk.getItemStack().clone();
         ItemMeta meta = item.getItemMeta();
         String title = mainGuiConfig.getPerkTitle();
+
+        title = title.replace("{Page}", String.valueOf(this.page));
+        title = title.replace("{TotalPage}", String.valueOf(((this.perks.size() - 1) / mainGuiConfig.getPerkBlocks().size()) + 1));
+
         title = FormatUtils.format(title.replace("{Name}", perk.getDisplayName()));
         DecimalFormat df = new DecimalFormat();
         df.setMaximumFractionDigits(2);
@@ -83,6 +87,8 @@ public class MainGui extends AbstractGui implements GuiInterface {
 
         for (String desc : mainGuiConfig.getPerkDescription()) {
             desc = desc.replace("{Name}", perk.getDisplayName());
+            desc = desc.replace("{Page}", String.valueOf(this.page));
+            desc = desc.replace("{TotalPage}", String.valueOf(((this.perks.size() - 1) / mainGuiConfig.getPerkBlocks().size()) + 1));
 
             if (desc.contains("skills")) {
                 if (perk.getSkills().isEmpty()) {

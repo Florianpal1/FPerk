@@ -38,7 +38,12 @@ public class LoadDataScheduler implements Runnable {
                         player = offlinePlayer.getPlayer();
                     }
 
-                    boolean havePermission = player.hasPermission(perk.getPermission());
+                    boolean havePermission = false;
+
+                    if (player != null) {
+                        havePermission = player.hasPermission(perk.getPermission());
+                    }
+
                     if ((player == null || havePermission && playerPerk.isEnabled())) {
 
                         for (var skill : perk.getSkills().entrySet()) {

@@ -25,6 +25,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public class PlayerPerkCommandManager {
@@ -41,6 +42,10 @@ public class PlayerPerkCommandManager {
 
     public List<PlayerPerk> getPlayerPerk(OfflinePlayer player) {
         return playerPerkQueries.getPlayerPerks(player.getUniqueId());
+    }
+
+    public Optional<PlayerPerk> getPlayerPerk(OfflinePlayer player, String perk) {
+        return playerPerkQueries.getPlayerPerk(player.getUniqueId(), perk);
     }
 
     public Map<UUID, List<PlayerPerk>> getAllPlayerPerk() {

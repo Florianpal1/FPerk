@@ -2,8 +2,11 @@ fperk:
   show_help_description: "&aView list of perks"
   help_description: "&aShow plugin help"
   reload_help_description: "&aReload plugin configurations"
+  modify_help_description: "&aModify status of a perk"
 
   show_perk: "&aYou have opened the list of perks"
+  modify_perk: "&aYou have set the status of the perk {PerkName} to the status {NewStatus}"
+  not_found: "&aUnable to find the perk {PerkName}"
   disable_all_perk: "&aYou have disabled all your perks."
   max_perk: "&cYou have reached the maximum number of perks simultaneously."
   no_permission: "&cYou do not have permission to activate the {PerkName} perk!"

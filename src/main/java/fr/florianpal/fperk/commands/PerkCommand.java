@@ -28,11 +28,16 @@ import fr.florianpal.fperk.languages.MessageKeys;
 import fr.florianpal.fperk.managers.commandManagers.CommandManager;
 import fr.florianpal.fperk.managers.commandManagers.PlayerPerkCommandManager;
 import fr.florianpal.fperk.objects.Perk;
+import fr.florianpal.fperk.objects.PlayerPerk;
+import fr.florianpal.fperk.utils.EffectUtils;
+import it.unimi.dsi.fastutil.Pair;
+import net.luckperms.api.model.user.User;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Date;
 import java.util.List;
 
 @CommandAlias("perk")
@@ -58,13 +63,86 @@ public class PerkCommand extends BaseCommand {
     @Description("{@@fperk.show_help_description}")
     public void onShowPerk(Player playerSender) {
         TaskChain<Perk> chain = FPerk.newChain();
-        chain.asyncFirst(() -> playerPerkCommandManager.getPlayerPerk(playerSender)).sync(playerPerks -> {
+        chain.asyncFirst(() -> playerPerkCommandManager.getPlayerPerk(playerSender)).syncLast(playerPerks -> {
             MainGui mainGui = new MainGui(plugin, perkConfig.getPerks().values().stream().toList(), playerPerks, playerSender, playerSender,1);
             mainGui.refreshGui();
 
             CommandIssuer issuerTarget = commandManager.getCommandIssuer(playerSender);
             issuerTarget.sendInfo(MessageKeys.SHOW_PERK);
-            return null;
+        }).execute();
+    }
+
+    @Subcommand("modify")
+    @CommandPermission("fperk.modify")
+    @Description("{@@fperk.modify_help_description}")
+    public void onEnablePerk(Player playerSender, String perkName, boolean status) {
+        TaskChain<Perk> chain = FPerk.newChain();
+        chain.asyncFirst(() -> Pair.of(playerPerkCommandManager.getPlayerPerk(playerSender, perkName), playerPerkCommandManager.getPlayerPerk(playerSender))).syncLast(pair -> {
+
+            var perks = perkConfig.getPerks().values().stream().toList();
+            var optionalPerk = perks.stream().filter(p -> p.getId().equals(perkName)).findFirst();
+
+            var playerPerks = pair.second();
+            long count = playerPerks.stream().filter(PlayerPerk::isEnabled).count();
+
+            User user = plugin.getLuckPerms().getUserManager().getUser(playerSender.getUniqueId());
+            String meta = user.getCachedData().getMetaData().getMetaValue("fperk.maxperk");
+            int result = -1;
+            if (meta != null) {
+                result = Integer.parseInt(meta);
+            }
+
+            if (optionalPerk.isEmpty()) {
+                CommandIssuer issuerTarget = commandManager.getCommandIssuer(playerSender);
+                issuerTarget.sendInfo(MessageKeys.NOT_FOUND, "{PerkName}", perkName);
+                return;
+            }
+
+            var perk = optionalPerk.get();
+
+            var optionalPlayerPerk = pair.first();
+            if (optionalPlayerPerk.isPresent()) {
+                var playerPerk = optionalPlayerPerk.get();
+
+                if((!playerPerk.isEnabled()) && (!perk.isIgnoreDelais()) && perk.getDelais() > new Date().getTime() - playerPerk.getLastEnabled().getTime()) {
+                    CommandIssuer issuerTarget = commandManager.getCommandIssuer(playerSender);
+                    issuerTarget.sendInfo(MessageKeys.DELAIS, "{PerkName}", perk.getDisplayName());
+                    return;
+                }
+
+                if (playerPerk.isEnabled()) {
+                    EffectUtils.disabledPerk(plugin, playerSender, perk);
+
+                    playerPerk.setEnabled(false);
+                    playerPerkCommandManager.updatePlayerPerk(playerPerk);
+                } else {
+                    if (result <= count && (perk.getPermissionBypass() == null || !playerSender.hasPermission(perk.getPermissionBypass()))) {
+                        CommandIssuer issuerTarget = commandManager.getCommandIssuer(playerSender);
+                        issuerTarget.sendInfo(MessageKeys.MAX_PERK);
+                        return;
+                    }
+
+                    EffectUtils.enabledPerk(plugin, playerSender, playerPerk, perk);
+
+                    playerPerk.setEnabled(true);
+                    playerPerkCommandManager.updatePlayerPerk(playerPerk);
+                }
+            } else {
+                if (result <= count && (perk.getPermissionBypass() == null || !playerSender.hasPermission(perk.getPermissionBypass()))) {
+                    CommandIssuer issuerTarget = commandManager.getCommandIssuer(playerSender);
+                    issuerTarget.sendInfo(MessageKeys.MAX_PERK);
+                    return;
+                }
+
+                PlayerPerk playerPerk = new PlayerPerk(-1, playerSender.getUniqueId(), perk.getId(), new Date().getTime(), true);
+                playerPerk.setId(playerPerkCommandManager.addPlayerPerk(playerPerk));
+
+                EffectUtils.enabledPerk(plugin, playerSender, playerPerk, perk);
+
+            }
+
+            CommandIssuer issuerTarget = commandManager.getCommandIssuer(playerSender);
+            issuerTarget.sendInfo(MessageKeys.MODIFY_PERK, "{PerkName}", perkName, "{Status}", String.valueOf(status));
         }).execute();
     }
 
@@ -76,13 +154,12 @@ public class PerkCommand extends BaseCommand {
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
         if(offlinePlayer != null && offlinePlayer.isOnline()) {
             TaskChain<Perk> chain = FPerk.newChain();
-            chain.asyncFirst(() -> playerPerkCommandManager.getPlayerPerk(offlinePlayer)).sync(playerPerks -> {
+            chain.asyncFirst(() -> playerPerkCommandManager.getPlayerPerk(offlinePlayer)).syncLast(playerPerks -> {
                 MainGui mainGui = new MainGui(plugin, perkConfig.getPerks().values().stream().toList(), playerPerks, offlinePlayer.getPlayer(), playerSender, 1);
                 mainGui.refreshGui();
 
                 CommandIssuer issuerTarget = commandManager.getCommandIssuer(playerSender);
                 issuerTarget.sendInfo(MessageKeys.SHOW_PERK);
-                return null;
             }).execute();
         }
     }

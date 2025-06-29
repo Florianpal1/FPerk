@@ -32,7 +32,11 @@ public class PlayerPerkQueries implements IDatabaseTable {
     private static final String GET_ALL_PERK = "SELECT * FROM fperk_playerperk";
 
     private static final String GET_ALL_PERK_FROM_PLAYER = "SELECT * FROM fperk_playerperk where playerUUID=?";
+
+    private static final String GET_PERK_FROM_PLAYER_WITH_NAME = "SELECT * FROM fperk_playerperk where playerUUID=? AND perk=?";
+
     private static final String GET_PERK_WITH_ID = "SELECT * FROM fperk_playerperk WHERE id=?";
+
     private static final String ADD_PERK = "INSERT INTO fperk_playerperk (playerUUID, perk, lastEnabled, isEnabled) VALUES(?,?,?,?)";
 
     private static final String UPDATE_PERK = "UPDATE fperk_playerperk SET playerUUID=?, perk=?, lastEnabled=?, isEnabled=? WHERE id=?";
@@ -223,6 +227,41 @@ public class PlayerPerkQueries implements IDatabaseTable {
         }
 
         return playerPerks;
+    }
+
+    public Optional<PlayerPerk> getPlayerPerk(UUID playerUUID, String perk) {
+        PreparedStatement statement = null;
+        ResultSet result = null;
+        Optional<PlayerPerk> playerPerk = Optional.empty();
+        try (Connection connection = databaseManager.getConnection()) {
+            statement = connection.prepareStatement(GET_PERK_FROM_PLAYER_WITH_NAME);
+            statement.setString(1, playerUUID.toString());
+            statement.setString(2, perk);
+            result = statement.executeQuery();
+
+            while (result.next()) {
+                int id = result.getInt(1);
+                long lastEnabled = result.getLong(4);
+                boolean enabled = result.getBoolean(5);
+
+                playerPerk = Optional.of(new PlayerPerk(id, playerUUID, perk, lastEnabled, enabled));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (result != null) {
+                    result.close();
+                }
+                if (statement != null) {
+                    statement.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return playerPerk;
     }
 
     @Override

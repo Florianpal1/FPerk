@@ -24,6 +24,10 @@ public enum MessageKeys implements MessageKeyProvider {
 
     SHOW_PERK,
 
+    MODIFY_PERK,
+
+    NOT_FOUND,
+
     DISABLE_ALL_PERK,
 
     MAX_PERK,

@@ -2,8 +2,11 @@ fperk:
   show_help_description: "&aAfficher la liste des entreprises"
   help_description: "&aAfficher l'aide du plugin"
   reload_help_description: "&aRecharger les configurations du plugin"
+  modify_help_description: "&aModifier le status d'une perk"
 
   show_perk: "&aVous avez ouvert la liste des perks"
+  modify_perk: "&aVous avez mis le status de la perk {PerkName} vers le status {NewStatus}"
+  not_found: "&aImpossible de trouver la perk {PerkName}"
   disable_all_perk: "&aVous avez désactivé toutes vos perks."
   max_perk: "&cVous avez atteint le nombre maximum de perk en simultané."
   no_permission: "&cVous n'avez pas la permission d'activée la perk {PerkName} !"
