@@ -18,49 +18,92 @@ package fr.florianpal.fperk.managers.commandManagers;
 
 
 import fr.florianpal.fperk.FPerk;
+import fr.florianpal.fperk.enums.SQLType;
 import fr.florianpal.fperk.objects.PlayerPerk;
 import fr.florianpal.fperk.queries.PlayerPerkQueries;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class PlayerPerkCommandManager {
 
     private final PlayerPerkQueries playerPerkQueries;
 
+    private Map<UUID, List<PlayerPerk>> sqliteCache = new HashMap<>();
+
+    private final SQLType sqlType;
+
+    private int idMax = 0;
+
     public PlayerPerkCommandManager(FPerk plugin) {
         this.playerPerkQueries = plugin.getPlayerPerkQueries();
+        this.sqliteCache = playerPerkQueries.getAllPerks();
+        this.sqlType = plugin.getConfigurationManager().getDatabase().getSqlType();
     }
 
     public List<PlayerPerk> getPlayerPerk(Player player) {
+        if (SQLType.SQLite.equals(sqlType)) {
+            return sqliteCache.getOrDefault(player.getUniqueId(), new ArrayList<>());
+        }
         return playerPerkQueries.getPlayerPerks(player.getUniqueId());
     }
 
     public List<PlayerPerk> getPlayerPerk(OfflinePlayer player) {
+        if (SQLType.SQLite.equals(sqlType)) {
+            return sqliteCache.getOrDefault(player.getUniqueId(), new ArrayList<>());
+        }
         return playerPerkQueries.getPlayerPerks(player.getUniqueId());
     }
 
     public Optional<PlayerPerk> getPlayerPerk(OfflinePlayer player, String perk) {
+        if (SQLType.SQLite.equals(sqlType)) {
+            return sqliteCache.getOrDefault(player.getUniqueId(), new ArrayList<>()).stream().filter(p -> p.getPerk().equals(perk)).findFirst();
+        }
         return playerPerkQueries.getPlayerPerk(player.getUniqueId(), perk);
     }
 
     public Map<UUID, List<PlayerPerk>> getAllPlayerPerk() {
+        if (SQLType.SQLite.equals(sqlType)) {
+            return sqliteCache;
+        }
         return playerPerkQueries.getAllPerks();
     }
 
     public int addPlayerPerk(PlayerPerk playerPerk) {
-        return playerPerkQueries.addPlayerPerk(playerPerk);
+        int id = playerPerkQueries.addPlayerPerk(playerPerk);
+        if (SQLType.SQLite.equals(sqlType))  {
+
+            playerPerk.setId(id);
+            if (sqliteCache.containsKey(playerPerk.getPlayerUUID())) {
+                sqliteCache.get(playerPerk.getPlayerUUID()).add(playerPerk);
+            } else {
+                sqliteCache.put(playerPerk.getPlayerUUID(), List.of(playerPerk));
+            }
+            idMax = idMax + 1;
+        }
+        return id;
     }
 
     public void updatePlayerPerk(PlayerPerk playerPerk) {
+        if (SQLType.SQLite.equals(sqlType))  {
+
+            if (sqliteCache.containsKey(playerPerk.getPlayerUUID())) {
+                Optional<PlayerPerk> playerPerkOptional = sqliteCache.get(playerPerk.getPlayerUUID()).stream().filter(p -> p.getId() == playerPerk.getId()).findFirst();
+                playerPerkOptional.ifPresent(perk -> sqliteCache.get(playerPerk.getPlayerUUID()).remove(perk));
+                sqliteCache.get(playerPerk.getPlayerUUID()).add(playerPerk);
+            } else {
+                sqliteCache.put(playerPerk.getPlayerUUID(), List.of(playerPerk));
+            }
+        }
         playerPerkQueries.updatePerk(playerPerk);
     }
 
     public void disableAllPerk(Player player) {
+        if (SQLType.SQLite.equals(sqlType) && sqliteCache.containsKey(player.getUniqueId())) {
+                sqliteCache.get(player.getUniqueId()).forEach(p -> p.setEnabled(false));
+            }
+
         playerPerkQueries.disableAllPerk(player);
     }
 }
