@@ -93,7 +93,8 @@ public class PlayerPerkCommandManager {
                 playerPerkOptional.ifPresent(perk -> sqliteCache.get(playerPerk.getPlayerUUID()).remove(perk));
                 sqliteCache.get(playerPerk.getPlayerUUID()).add(playerPerk);
             } else {
-                sqliteCache.put(playerPerk.getPlayerUUID(), List.of(playerPerk));
+                sqliteCache.put(playerPerk.getPlayerUUID(), new ArrayList<>());
+                sqliteCache.get(playerPerk.getPlayerUUID()).add(playerPerk);
             }
         }
         playerPerkQueries.updatePerk(playerPerk);
