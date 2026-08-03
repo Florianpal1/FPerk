@@ -34,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -172,7 +173,7 @@ class WorldSkillsTest {
             prepare(new AutoSmeltSkill(), true).onBlockBreak(breakEvent(block, false));
 
             verify(block.getWorld()).dropItemNaturally(any(Location.class),
-                    new ItemStack(Material.GOLD_INGOT, 1));
+                    eq(new ItemStack(Material.GOLD_INGOT, 1)));
         }
 
         @Test
@@ -182,7 +183,7 @@ class WorldSkillsTest {
             prepare(new AutoSmeltSkill(), true).onBlockBreak(breakEvent(block, false));
 
             verify(block.getWorld()).dropItemNaturally(any(Location.class),
-                    new ItemStack(Material.COPPER_INGOT, 3));
+                    eq(new ItemStack(Material.COPPER_INGOT, 3)));
         }
 
         @Test

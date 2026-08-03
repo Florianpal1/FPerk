@@ -7,6 +7,7 @@ import fr.florianpal.fperk.managers.DatabaseManager;
 import fr.florianpal.fperk.objects.PlayerPerk;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,8 @@ class PlayerPerkQueriesTest {
 
     private PlayerPerkQueries queries;
 
+    private DatabaseManager manager;
+
     private final UUID alice = UUID.randomUUID();
 
     private final UUID bob = UUID.randomUUID();
@@ -50,7 +53,7 @@ class PlayerPerkQueriesTest {
                   url: "jdbc:sqlite:%s"
                   user: ""
                   password: ""
-                """.formatted(folder.resolve("test.db")))));
+                """.formatted(folder.resolve("test.db").toString().replace('\\', '/')))));
 
         ConfigurationManager configuration = mock(ConfigurationManager.class);
         when(configuration.getDatabase()).thenReturn(database);
@@ -59,12 +62,17 @@ class PlayerPerkQueriesTest {
         when(plugin.getLogger()).thenReturn(Logger.getLogger("FPerkTest"));
         when(plugin.getConfigurationManager()).thenReturn(configuration);
 
-        DatabaseManager manager = new DatabaseManager(plugin);
+        manager = new DatabaseManager(plugin);
         when(plugin.getDatabaseManager()).thenReturn(manager);
 
         queries = new PlayerPerkQueries(plugin);
         manager.addRepository(queries);
         manager.initializeTables();
+    }
+
+    @AfterEach
+    void tearDown() {
+        manager.close();
     }
 
     private PlayerPerk store(UUID uuid, String perk, boolean enabled, long lastEnabled) {

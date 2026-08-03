@@ -120,6 +120,13 @@ public class FPerk extends JavaPlugin {
         initChart();
     }
 
+    @Override
+    public void onDisable() {
+        if (databaseManager != null) {
+            databaseManager.close();
+        }
+    }
+
     private void initChart() {
         metrics.addCustomChart(new AdvancedPie("player_per_country", () -> {
             Map<String, Integer> valueMap = new HashMap<>();

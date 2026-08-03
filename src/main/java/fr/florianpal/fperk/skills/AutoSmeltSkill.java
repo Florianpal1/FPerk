@@ -53,7 +53,7 @@ public class AutoSmeltSkill extends SkillHandler implements Listener {
         Material ore = minerals.get(mineral);
         Material ingot = ingots.get(ore);
         int count = countMineral(block, ore);
-        count = applyLuck(event.getPlayer().getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.FORTUNE), count);
+        count = applyLuck(event.getPlayer().getInventory().getItemInMainHand().getEnchantments().getOrDefault(Enchantment.FORTUNE, 0), count);
 
         event.setDropItems(false);
         block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(ingot, count));

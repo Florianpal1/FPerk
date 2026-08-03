@@ -60,6 +60,10 @@ public class DatabaseManager {
         repositories.add(repository);
     }
 
+    public void close() {
+        ds.close();
+    }
+
     public void initializeTables() {
         try (Connection connection = getConnection()) {
             for (IDatabaseTable repository : repositories) {
