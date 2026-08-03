@@ -44,14 +44,14 @@ public class PlayerPerkCommandManager {
 
     public List<PlayerPerk> getPlayerPerk(Player player) {
         if (SQLType.SQLite.equals(sqlType)) {
-            return sqliteCache.getOrDefault(player.getUniqueId(), new ArrayList<>());
+            return new ArrayList<>(sqliteCache.getOrDefault(player.getUniqueId(), new ArrayList<>()));
         }
         return playerPerkQueries.getPlayerPerks(player.getUniqueId());
     }
 
     public List<PlayerPerk> getPlayerPerk(OfflinePlayer player) {
         if (SQLType.SQLite.equals(sqlType)) {
-            return sqliteCache.getOrDefault(player.getUniqueId(), new ArrayList<>());
+            return new ArrayList<>(sqliteCache.getOrDefault(player.getUniqueId(), new ArrayList<>()));
         }
         return playerPerkQueries.getPlayerPerks(player.getUniqueId());
     }
@@ -78,7 +78,7 @@ public class PlayerPerkCommandManager {
             if (sqliteCache.containsKey(playerPerk.getPlayerUUID())) {
                 sqliteCache.get(playerPerk.getPlayerUUID()).add(playerPerk);
             } else {
-                sqliteCache.put(playerPerk.getPlayerUUID(), List.of(playerPerk));
+                sqliteCache.put(playerPerk.getPlayerUUID(), new ArrayList<>(List.of(playerPerk)));
             }
             idMax = idMax + 1;
         }
