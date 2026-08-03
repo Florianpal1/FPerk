@@ -155,11 +155,12 @@ block:
   '40':
     utility: barrier
     material: NETHER_STAR
-    title: "&eInformations"
+    title: "&eInformation"
     description:
-      - "&7Bienvenue dans la liste des perk !"
-      - "&7Survolez les différents boutons pour"
-      - "&7explorer les fonctionnalités disponibles"
+      - "&7Welcome to the perk list !"
+      - "&7Hover the buttons to explore"
+      - "&7the available features"
+      - "&7Enabled perks : &a{ActivatedPerk}"
   '41':
     utility: next
     material: ARROW
@@ -179,12 +180,12 @@ block:
     utility: action
     material: TNT
     type: RESET_ALL
-    title: "&aDésactivé toutes vos perks"
+    title: "&cDisable all your perks"
     description:
-      - "&7Désactivé toutes vos perks"
+      - "&7Turns every one of your perks off"
   '44':
     utility: close
     material: BARRIER
-    title: "&cFermer"
+    title: "&cClose"
     description:
-      - "&7Cliquez ici pour fermer le menu"
+      - "&7Click here to close the menu"

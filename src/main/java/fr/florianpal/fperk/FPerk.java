@@ -3,21 +3,20 @@ package fr.florianpal.fperk;
 import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
+import fr.florianpal.fperk.api.SkillRegistry;
 import fr.florianpal.fperk.commands.PerkCommand;
-import fr.florianpal.fperk.enums.EffectType;
 import fr.florianpal.fperk.listeners.*;
 import fr.florianpal.fperk.managers.ConfigurationManager;
 import fr.florianpal.fperk.managers.DatabaseManager;
+import fr.florianpal.fperk.managers.SkillService;
 import fr.florianpal.fperk.managers.VaultIntegrationManager;
 import fr.florianpal.fperk.managers.commandManagers.CommandManager;
 import fr.florianpal.fperk.managers.commandManagers.PlayerPerkCommandManager;
-import fr.florianpal.fperk.objects.PlayerPerk;
 import fr.florianpal.fperk.placeholders.FPlaceholderExpansion;
 import fr.florianpal.fperk.queries.PlayerPerkQueries;
 import fr.florianpal.fperk.scheduler.LoadDataScheduler;
+import fr.florianpal.fperk.skills.BuiltinSkillRegistrar;
 import net.luckperms.api.LuckPerms;
-import net.luckperms.api.node.Node;
-import net.luckperms.api.node.NodeType;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.AdvancedPie;
 import org.bukkit.Bukkit;
@@ -54,7 +53,9 @@ public class FPerk extends JavaPlugin {
 
     private PlayerPerkQueries playerPerkQueries;
 
-    private final Map<EffectType, List<UUID>> perkPlayer = new HashMap<>();
+    private SkillRegistry skillRegistry;
+
+    private SkillService skillService;
 
     private LuckPerms luckPerms;
 
@@ -91,58 +92,24 @@ public class FPerk extends JavaPlugin {
 
         playerPerkCommandManager = new PlayerPerkCommandManager(this);
 
-        commandManager.registerCommand(new PerkCommand(this));
-
-        getServer().getPluginManager().registerEvents(new DeathListener(this), this);
-        getServer().getPluginManager().registerEvents(new JoinListener(this), this);
-        getServer().getPluginManager().registerEvents(new PlayerToggleFlightListener(this), this);
-        getServer().getPluginManager().registerEvents(new EntityTargetListener(this), this);
-        getServer().getPluginManager().registerEvents(new BlockBreakListener(this), this);
-        getServer().getPluginManager().registerEvents(new EntityDamageByEntityListener(this), this);
-        getServer().getPluginManager().registerEvents(new PlayerMoveListener(this), this);
-        getServer().getPluginManager().registerEvents(new LeaveListener(this), this);
-        getServer().getPluginManager().registerEvents(new PlayerChangedWorldListener(this), this);
-        getServer().getPluginManager().registerEvents(new EntityDamageListener(this), this);
-        getServer().getPluginManager().registerEvents(new PlayerRespawnListener(this), this);
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new LoadDataScheduler(this));
-
         RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
         if (provider != null) {
             luckPerms = provider.getProvider();
         }
 
-        for(EffectType effectType : EffectType.values()) {
-            perkPlayer.put(effectType, new ArrayList<>());
-        }
+        // The registry has to exist before anything can apply a skill, and before the addons that
+        // depend on FPerk are enabled.
+        skillRegistry = new SkillRegistry(this);
+        skillService = new SkillService(this);
+        BuiltinSkillRegistrar.registerAll(this);
 
-        TaskChain<Map<UUID, List<PlayerPerk>>> chain = FPerk.newChain();
-        chain.asyncFirst(() -> playerPerkCommandManager.getAllPlayerPerk()).syncLast(allPlayerPerks -> {
-            for (var playerPerk : allPlayerPerks.entrySet()) {
+        commandManager.registerCommand(new PerkCommand(this));
 
-                var offlinePlayer = Bukkit.getOfflinePlayer(playerPerk.getKey());
-                if (offlinePlayer == null) {
-                    continue;
-                }
+        getServer().getPluginManager().registerEvents(new JoinListener(this), this);
+        getServer().getPluginManager().registerEvents(new LeaveListener(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerRespawnListener(this), this);
 
-                for (var perk : playerPerk.getValue()) {
-
-                    var perkCurrent = configurationManager.getPerkConfig().getPerks().get(perk.getPerk());
-                    var user = luckPerms.getUserManager().getUser(playerPerk.getKey());
-                    var havePerm = true;
-
-                    if (user != null) {
-                        havePerm = user.getNodes().stream().filter(NodeType.PERMISSION::matches).map(NodeType.PERMISSION::cast).filter(Node::getValue).anyMatch(p -> p.getPermission().equals(perkCurrent.getPermission()));
-                    }
-
-                    if(perk.isEnabled() && havePerm) {
-
-                        for (var comp : perkCurrent.getSkills().entrySet()) {
-                            perkPlayer.get(comp.getValue().getType()).add(playerPerk.getKey());
-                        }
-                    }
-                }
-            }
-        }).execute();
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new LoadDataScheduler(this));
 
         if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new FPlaceholderExpansion(this).register();
@@ -234,26 +201,24 @@ public class FPerk extends JavaPlugin {
         return playerPerkQueries;
     }
 
-    public boolean isPerkActive(UUID uuid, EffectType effectType) {
-        return this.perkPlayer.get(effectType).contains(uuid);
+    /**
+     * Where an addon declares its own skills. Call it from your {@code onEnable()} :
+     * <pre>
+     * FPerk fperk = (FPerk) getServer().getPluginManager().getPlugin("FPerk");
+     * fperk.getSkillRegistry().register(this, new MySkill());
+     * </pre>
+     *
+     * @see fr.florianpal.fperk.api.SkillHandler
+     */
+    public SkillRegistry getSkillRegistry() {
+        return skillRegistry;
     }
 
-    public void addPerkActive(UUID uuid, EffectType effectType) {
-        this.perkPlayer.get(effectType).add(uuid);
-    }
-
-    public void removePerkActive(UUID uuid, EffectType effectType) {
-        this.perkPlayer.get(effectType).remove(uuid);
-    }
-
-    public void removeAllPerkActive(UUID uuid) {
-        for(var perk : this.perkPlayer.entrySet()) {
-            this.perkPlayer.get(perk.getKey()).remove(uuid);
-        }
-    }
-
-    public Map<EffectType, List<UUID>> getAllPerkActive() {
-        return perkPlayer;
+    /**
+     * Drives when the skills of a perk are turned on, off, or applied again.
+     */
+    public SkillService getSkillService() {
+        return skillService;
     }
 
     public LuckPerms getLuckPerms() {

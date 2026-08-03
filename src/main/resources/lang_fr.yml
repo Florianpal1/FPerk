@@ -1,17 +1,18 @@
 fperk:
-  show_help_description: "&aAfficher la liste des entreprises"
+  show_help_description: "&aAfficher la liste des perks"
   help_description: "&aAfficher l'aide du plugin"
   reload_help_description: "&aRecharger les configurations du plugin"
-  modify_help_description: "&aModifier le status d'une perk"
+  modify_help_description: "&aModifier le statut d'une perk"
 
   show_perk: "&aVous avez ouvert la liste des perks"
-  modify_perk: "&aVous avez mis le status de la perk {PerkName} vers le status {NewStatus}"
+  modify_perk: "&aVous avez mis le statut de la perk {PerkName} sur {NewStatus}"
   not_found: "&aImpossible de trouver la perk {PerkName}"
   disable_all_perk: "&aVous avez désactivé toutes vos perks."
   max_perk: "&cVous avez atteint le nombre maximum de perk en simultané."
-  no_permission: "&cVous n'avez pas la permission d'activée la perk {PerkName} !"
+  no_permission: "&cVous n'avez pas la permission d'activer la perk {PerkName} !"
   reload: "Rechargement des configurations"
-  delais: "&cVous devez encore attendre avant de pouvoir réactivée la perk {PerkName} !"
+  delais: "&cVous devez encore attendre avant de pouvoir réactiver la perk {PerkName} !"
+  databaseerror: "&cUne erreur de base de données est survenue, contactez un administrateur."
 acf-minecraft:
   invalid_world: "Ce monde n'existe pas !"
   you_must_be_holding_item: "Vous devez avoir un item dans votre main !"

@@ -1,8 +1,7 @@
 package fr.florianpal.fperk.objects;
 
-import fr.florianpal.fperk.enums.EffectType;
-
 import java.util.List;
+import java.util.Locale;
 
 public class Skill {
 
@@ -10,16 +9,20 @@ public class Skill {
 
     private final List<String> displayName;
 
-    private final EffectType type;
+    /**
+     * The skill type, as written in the {@code type} field of {@code skill.yml}. It points at a
+     * {@code SkillHandler} registered by FPerk or by an addon.
+     */
+    private final String type;
 
     private final String effect;
 
     private final float level;
 
-    public Skill(String id, List<String> displayName, EffectType type, String effect, float level) {
+    public Skill(String id, List<String> displayName, String type, String effect, float level) {
         this.id = id;
         this.displayName = displayName;
-        this.type = type;
+        this.type = type == null ? "" : type.trim().toUpperCase(Locale.ROOT);
         this.effect = effect;
         this.level = level;
     }
@@ -32,7 +35,7 @@ public class Skill {
         return displayName;
     }
 
-    public EffectType getType() {
+    public String getType() {
         return type;
     }
 

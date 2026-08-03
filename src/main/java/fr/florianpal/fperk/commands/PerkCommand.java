@@ -29,7 +29,6 @@ import fr.florianpal.fperk.managers.commandManagers.CommandManager;
 import fr.florianpal.fperk.managers.commandManagers.PlayerPerkCommandManager;
 import fr.florianpal.fperk.objects.Perk;
 import fr.florianpal.fperk.objects.PlayerPerk;
-import fr.florianpal.fperk.utils.EffectUtils;
 import it.unimi.dsi.fastutil.Pair;
 import net.luckperms.api.model.user.User;
 import org.bukkit.Bukkit;
@@ -92,57 +91,59 @@ public class PerkCommand extends BaseCommand {
                 result = Integer.parseInt(meta);
             }
 
+            CommandIssuer issuer = commandManager.getCommandIssuer(playerSender);
+
             if (optionalPerk.isEmpty()) {
-                CommandIssuer issuerTarget = commandManager.getCommandIssuer(playerSender);
-                issuerTarget.sendInfo(MessageKeys.NOT_FOUND, "{PerkName}", perkName);
+                issuer.sendInfo(MessageKeys.NOT_FOUND, "{PerkName}", perkName);
                 return;
             }
 
             var perk = optionalPerk.get();
 
+            if (!playerSender.hasPermission(perk.getPermission())) {
+                issuer.sendInfo(MessageKeys.NO_PERMISSION, "{PerkName}", perk.getDisplayName());
+                return;
+            }
+
             var optionalPlayerPerk = pair.first();
-            if (optionalPlayerPerk.isPresent()) {
-                var playerPerk = optionalPlayerPerk.get();
+            // The requested state, not a toggle : asking for the state a perk is already in is a
+            // no-op rather than an inversion.
+            boolean enabled = optionalPlayerPerk.map(PlayerPerk::isEnabled).orElse(false);
 
-                if((!playerPerk.isEnabled()) && (!perk.isIgnoreDelais()) && perk.getDelais() > new Date().getTime() - playerPerk.getLastEnabled().getTime()) {
-                    CommandIssuer issuerTarget = commandManager.getCommandIssuer(playerSender);
-                    issuerTarget.sendInfo(MessageKeys.DELAIS, "{PerkName}", perk.getDisplayName());
-                    return;
-                }
+            if (status != enabled) {
+                if (status) {
+                    var playerPerk = optionalPlayerPerk.orElse(null);
 
-                if (playerPerk.isEnabled()) {
-                    EffectUtils.disabledPerk(plugin, playerSender, perk);
-
-                    playerPerk.setEnabled(false);
-                    playerPerkCommandManager.updatePlayerPerk(playerPerk);
-                } else {
-                    if (result <= count && (perk.getPermissionBypass() == null || !playerSender.hasPermission(perk.getPermissionBypass()))) {
-                        CommandIssuer issuerTarget = commandManager.getCommandIssuer(playerSender);
-                        issuerTarget.sendInfo(MessageKeys.MAX_PERK);
+                    if (playerPerk != null && !perk.isIgnoreDelais()
+                            && perk.getDelais() > new Date().getTime() - playerPerk.getLastEnabled().getTime()) {
+                        issuer.sendInfo(MessageKeys.DELAIS, "{PerkName}", perk.getDisplayName());
                         return;
                     }
 
-                    EffectUtils.enabledPerk(plugin, playerSender, playerPerk, perk);
+                    if (result <= count && (perk.getPermissionBypass() == null || !playerSender.hasPermission(perk.getPermissionBypass()))) {
+                        issuer.sendInfo(MessageKeys.MAX_PERK);
+                        return;
+                    }
 
-                    playerPerk.setEnabled(true);
+                    if (playerPerk == null) {
+                        playerPerk = new PlayerPerk(-1, playerSender.getUniqueId(), perk.getId(), new Date().getTime(), true);
+                        playerPerk.setId(playerPerkCommandManager.addPlayerPerk(playerPerk));
+                        plugin.getSkillService().enable(playerSender, playerPerk, perk);
+                    } else {
+                        plugin.getSkillService().enable(playerSender, playerPerk, perk);
+                        playerPerk.setEnabled(true);
+                        playerPerkCommandManager.updatePlayerPerk(playerPerk);
+                    }
+                } else {
+                    var playerPerk = optionalPlayerPerk.get();
+
+                    plugin.getSkillService().disable(playerSender, playerPerk, perk);
+                    playerPerk.setEnabled(false);
                     playerPerkCommandManager.updatePlayerPerk(playerPerk);
                 }
-            } else {
-                if (result <= count && (perk.getPermissionBypass() == null || !playerSender.hasPermission(perk.getPermissionBypass()))) {
-                    CommandIssuer issuerTarget = commandManager.getCommandIssuer(playerSender);
-                    issuerTarget.sendInfo(MessageKeys.MAX_PERK);
-                    return;
-                }
-
-                PlayerPerk playerPerk = new PlayerPerk(-1, playerSender.getUniqueId(), perk.getId(), new Date().getTime(), true);
-                playerPerk.setId(playerPerkCommandManager.addPlayerPerk(playerPerk));
-
-                EffectUtils.enabledPerk(plugin, playerSender, playerPerk, perk);
-
             }
 
-            CommandIssuer issuerTarget = commandManager.getCommandIssuer(playerSender);
-            issuerTarget.sendInfo(MessageKeys.MODIFY_PERK, "{PerkName}", perkName, "{Status}", String.valueOf(status));
+            issuer.sendInfo(MessageKeys.MODIFY_PERK, "{PerkName}", perkName, "{NewStatus}", String.valueOf(status));
         }).execute();
     }
 

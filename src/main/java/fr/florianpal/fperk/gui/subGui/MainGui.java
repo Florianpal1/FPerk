@@ -95,9 +95,14 @@ public class MainGui extends AbstractGui implements GuiInterface {
                     listDescription.add(desc.replace("{skills}", ""));
                 } else {
                     for (var line : perk.getSkills().entrySet()) {
+                        // Null when the perk lists a skill id that skill.yml does not declare. The
+                        // activation already logs it, so the icon just skips it.
+                        if (line.getValue() == null) {
+                            continue;
+                        }
 
                         for (String displayName : line.getValue().getDisplayName()) {
-                            listDescription.add(FormatUtils.format(displayName));
+                            listDescription.add(FormatUtils.format(applySkillFormat(displayName)));
                         }
                     }
                 }
@@ -117,6 +122,19 @@ public class MainGui extends AbstractGui implements GuiInterface {
             item.setItemMeta(meta);
         }
         return item;
+    }
+
+    /**
+     * Wraps one skill description in the {@code skillFormat} of the GUI configuration. A blank format,
+     * or one that does not carry the placeholder, leaves the description untouched.
+     */
+    private String applySkillFormat(String displayName) {
+        String format = mainGuiConfig.getSkillFormat();
+        if (format == null || format.isBlank()) {
+            return displayName;
+        }
+
+        return format.replace("{DisplayName}", displayName);
     }
 
     @Override
@@ -163,7 +181,7 @@ public class MainGui extends AbstractGui implements GuiInterface {
 
                     if (playerPerk.isEnabled()) {
 
-                        EffectUtils.disabledPerk(plugin, player, perk);
+                        plugin.getSkillService().disable(player, playerPerk, perk);
                         this.playerPerks.stream().filter(p -> p.getId() == playerPerk.getId()).forEach(p -> p.setEnabled(false));
 
 
@@ -176,7 +194,7 @@ public class MainGui extends AbstractGui implements GuiInterface {
                             return;
                         }
 
-                        EffectUtils.enabledPerk(plugin, player, playerPerk, perk);
+                        plugin.getSkillService().enable(player, playerPerk, perk);
                         this.playerPerks.stream().filter(p -> p.getId() == playerPerk.getId()).forEach(p -> p.setEnabled(true));
 
                         playerPerk.setEnabled(true);
@@ -193,7 +211,7 @@ public class MainGui extends AbstractGui implements GuiInterface {
                     playerPerk.setId(playerPerkCommandManager.addPlayerPerk(playerPerk));
 
                     this.playerPerks.add(playerPerk);
-                    EffectUtils.enabledPerk(plugin, player, playerPerk, perk);
+                    plugin.getSkillService().enable(player, playerPerk, perk);
 
                 }
                 refreshGui();
@@ -204,6 +222,10 @@ public class MainGui extends AbstractGui implements GuiInterface {
         for (Action action : mainGuiConfig.getActionBlocks()) {
             if (e.getRawSlot() == action.getIndex()) {
                 if (action.getType().equals(ActionType.RESET_ALL)) {
+                    // Notify every skill first, so an addon can undo whatever it did, then clear
+                    // the state and the storage.
+                    plugin.getSkillService().resetAll(player, this.playerPerks);
+
                     playerPerkCommandManager.disableAllPerk(player);
                     inv.close();
                     for (PotionEffect potionEffect : player.getActivePotionEffects()) {
@@ -211,8 +233,6 @@ public class MainGui extends AbstractGui implements GuiInterface {
                     }
                     EffectUtils.enabledFly(player, false);
                     EffectUtils.resetFlySpeed(player);
-
-                    plugin.removeAllPerkActive(player.getUniqueId());
 
                     CommandIssuer issuerTarget = commandManager.getCommandIssuer(showPlayer);
                     issuerTarget.sendInfo(MessageKeys.DISABLE_ALL_PERK);

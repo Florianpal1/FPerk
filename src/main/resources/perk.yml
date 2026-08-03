@@ -4,31 +4,30 @@ perks:
     material: "ELYTRA"
     skills: # Skills (see skill.yml)
       - "fly"
-    delais: 500 # In MilliSeconds
+    delais: 500 # Cooldown, in MILLISECONDS
     ignoreDelais: true
-    time: 500 # In MilliSeconds
+    time: 500 # Duration, in SECONDS (ignored when persistant is true)
     persistant: false
     permission: "fperk.fly"
-    bannedWorld: []
   "heal":
     displayName: "Heal"
     material: "BEACON"
     skills: # Skills (see skill.yml)
       - "heal"
       - "regeneration"
-    delais: 500 # In MilliSeconds
+    delais: 500 # Cooldown, in MILLISECONDS
     ignoreDelais: true
-    time: 500 # In MilliSeconds
+    time: 500 # Duration, in SECONDS (ignored when persistant is true)
     persistant: false
-    permission: "fperk.fly"
+    permission: "fperk.heal"
   "nightvision":
     displayName: "Night Vision"
     material: "ENDER_EYE"
     skills:
       - "nightvision"
-    delais: 500 # In MilliSeconds
+    delais: 500 # Cooldown, in MILLISECONDS
     ignoreDelais: true
-    time: 500 # In MilliSeconds
+    time: 500 # Duration, in SECONDS (ignored when persistant is true)
     persistant: false
     permission: "fperk.nightvision"
   "glowing":
@@ -36,9 +35,9 @@ perks:
     material: "GLOWSTONE_DUST"
     skills: # Skills (see skill.yml)
       - "glowing"
-    delais: 500 # In MilliSeconds
+    delais: 500 # Cooldown, in MILLISECONDS
     ignoreDelais: true
-    time: 500 # In MilliSeconds
+    time: 500 # Duration, in SECONDS (ignored when persistant is true)
     persistant: false
     permission: "fperk.glowing"
   "keep_inventory":
@@ -46,9 +45,9 @@ perks:
     material: "CHEST"
     skills: # Skills (see skill.yml)
       - "keep_inventory"
-    delais: 500 # In MilliSeconds
+    delais: 500 # Cooldown, in MILLISECONDS
     ignoreDelais: true
-    time: 500 # In MilliSeconds
+    time: 500 # Duration, in SECONDS (ignored when persistant is true)
     persistant: true
     permission: "fperk.keep_inventory"
   "keep_experience":
@@ -56,9 +55,9 @@ perks:
     material: "EXPERIENCE_BOTTLE"
     skills: # Skills (see skill.yml)
       - "keep_experience"
-    delais: 500 # In MilliSeconds
+    delais: 500 # Cooldown, in MILLISECONDS
     ignoreDelais: true
-    time: 500 # In MilliSeconds
+    time: 500 # Duration, in SECONDS (ignored when persistant is true)
     persistant: true
     permission: "fperk.keep_experience"
   "harvest":
@@ -66,9 +65,9 @@ perks:
     material: "EXPERIENCE_BOTTLE"
     skills: # Skills (see skill.yml)
       - "harvest"
-    delais: 500 # In MilliSeconds
+    delais: 500 # Cooldown, in MILLISECONDS
     ignoreDelais: true
-    time: 500 # In MilliSeconds
+    time: 500 # Duration, in SECONDS (ignored when persistant is true)
     persistant: true
     permission: "fperk.harvest"
   "auto_smelt":
@@ -76,9 +75,9 @@ perks:
     material: "IRON_INGOT"
     skills: # Skills (see skill.yml)
       - "auto_smelt"
-    delais: 500 # In MilliSeconds
+    delais: 500 # Cooldown, in MILLISECONDS
     ignoreDelais: true
-    time: 500 # In MilliSeconds
+    time: 500 # Duration, in SECONDS (ignored when persistant is true)
     persistant: true
     permission: "fperk.autosmelt"
   "auto_knockback":
@@ -86,9 +85,9 @@ perks:
     material: "IRON_INGOT"
     skills: # Skills (see skill.yml)
       - "auto_knockback"
-    delais: 500 # In MilliSeconds
+    delais: 500 # Cooldown, in MILLISECONDS
     ignoreDelais: true
-    time: 500 # In MilliSeconds
+    time: 500 # Duration, in SECONDS (ignored when persistant is true)
     persistant: true
     permission: "fperk.antiknockback"
   "vacuum":
@@ -96,9 +95,9 @@ perks:
     material: "ENDER_PEARL"
     skills: # Skills (see skill.yml)
       - "vacuum"
-    delais: 500 # In MilliSeconds
+    delais: 500 # Cooldown, in MILLISECONDS
     ignoreDelais: true
-    time: 500 # In MilliSeconds
+    time: 500 # Duration, in SECONDS (ignored when persistant is true)
     persistant: true
     permission: "fperk.aspirator"
   "second_chance":
@@ -106,8 +105,8 @@ perks:
     material: "TOTEM_OF_UNDYING"
     skills: # Skills (see skill.yml)
       - "second_chance"
-    delais: 500 # In MilliSeconds
+    delais: 500 # Cooldown, in MILLISECONDS
     ignoreDelais: true
-    time: 500 # In MilliSeconds
+    time: 500 # Duration, in SECONDS (ignored when persistant is true)
     persistant: true
     permission: "fperk.secondchance"

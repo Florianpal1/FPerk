@@ -17,7 +17,6 @@
 
 package fr.florianpal.fperk.configurations;
 
-import fr.florianpal.fperk.enums.EffectType;
 import fr.florianpal.fperk.objects.Skill;
 import org.bukkit.configuration.Configuration;
 
@@ -34,11 +33,12 @@ public class SkillConfig {
 
         for (String index : config.getConfigurationSection("skills").getKeys(false)) {
             List<String> displayName = config.getStringList("skills." + index + ".displayName");
-            EffectType effectType = EffectType.valueOf(config.getString("skills." + index + ".type"));
+            // Free-form on purpose: the type points at a handler that an addon may register later.
+            String type = config.getString("skills." + index + ".type");
             String effect = config.getString("skills." + index + ".effect");
             float level = (float) config.getDouble("skills." + index + ".level");
 
-            skills.put(index, new Skill(index, displayName, effectType, effect, level));
+            skills.put(index, new Skill(index, displayName, type, effect, level));
         }
     }
 

@@ -25,7 +25,6 @@ import org.bukkit.entity.Player;
 
 import java.sql.*;
 import java.util.*;
-import java.util.Date;
 
 public class PlayerPerkQueries implements IDatabaseTable {
 
@@ -96,7 +95,9 @@ public class PlayerPerkQueries implements IDatabaseTable {
             statement = connection.prepareStatement(UPDATE_PERK);
             statement.setString(1, playerPerk.getPlayerUUID().toString());
             statement.setString(2, playerPerk.getPerk());
-            statement.setLong(3, new Date().getTime());
+            // The activation date, not the date of the write : stamping it here would restart the
+            // cooldown every time a perk is turned off, and reset the duration of a timed perk.
+            statement.setLong(3, playerPerk.getLastEnabled().getTime());
             statement.setBoolean(4, playerPerk.isEnabled());
             statement.setInt(5, playerPerk.getId());
             statement.executeUpdate();

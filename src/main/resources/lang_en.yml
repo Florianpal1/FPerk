@@ -12,6 +12,7 @@ fperk:
   no_permission: "&cYou do not have permission to activate the {PerkName} perk!"
   reload: "Reloading configurations"
   delais: "&cYou still have to wait before you can reactivate the {PerkName} perk!"
+  databaseerror: "&cA database error occurred, please contact an administrator."
 acf-minecraft:
   invalid_world: "Error: That world does not exist."
   you_must_be_holding_item: "Error: You must be holding an item in your main hand."

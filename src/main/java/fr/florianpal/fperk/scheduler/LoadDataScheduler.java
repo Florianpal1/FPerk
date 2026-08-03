@@ -3,15 +3,27 @@ package fr.florianpal.fperk.scheduler;
 import co.aikar.taskchain.TaskChain;
 import fr.florianpal.fperk.FPerk;
 import fr.florianpal.fperk.configurations.PerkConfig;
+import fr.florianpal.fperk.managers.SkillService;
+import fr.florianpal.fperk.objects.Perk;
 import fr.florianpal.fperk.objects.PlayerPerk;
+import net.luckperms.api.model.user.User;
+import net.luckperms.api.node.Node;
+import net.luckperms.api.node.NodeType;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Rebuilds the state of every stored perk when the server starts.
+ *
+ * <p>Players already connected get their perks applied again. Players who are not on this server
+ * only get their skills recorded as running, so that a BungeeCord setup sharing the same database
+ * stays coherent.</p>
+ */
 public class LoadDataScheduler implements Runnable {
 
     private final FPerk plugin;
@@ -25,45 +37,57 @@ public class LoadDataScheduler implements Runnable {
 
     @Override
     public void run() {
-        TaskChain<Void> chain = FPerk.newChain();
-        chain.asyncFirst(() -> {
-            Map<UUID, List<PlayerPerk>> allPlayerPerk = plugin.getPlayerPerkCommandManager().getAllPlayerPerk();
-            for (var playerPerks : allPlayerPerk.entrySet()) {
-                for (var playerPerk : playerPerks.getValue()) {
-                    var perk = perkConfig.getPerks().get(playerPerk.getPerk());
+        TaskChain<Map<UUID, List<PlayerPerk>>> chain = FPerk.newChain();
+        chain.asyncFirst(() -> plugin.getPlayerPerkCommandManager().getAllPlayerPerk())
+                .syncLast(this::apply)
+                .execute();
+    }
 
-                    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerPerk.getPlayerUUID());
-                    Player player = null;
-                    if (offlinePlayer.isOnline()) {
-                        player = offlinePlayer.getPlayer();
-                    }
+    private void apply(Map<UUID, List<PlayerPerk>> allPlayerPerks) {
+        SkillService skillService = plugin.getSkillService();
 
-                    boolean havePermission = false;
+        for (Map.Entry<UUID, List<PlayerPerk>> entry : allPlayerPerks.entrySet()) {
+            UUID uuid = entry.getKey();
+            Player player = Bukkit.getPlayer(uuid);
 
-                    if (player != null) {
-                        havePermission = player.hasPermission(perk.getPermission());
-                    }
+            if (player != null) {
+                skillService.syncPlayer(player, new ArrayList<>(entry.getValue()));
+                continue;
+            }
 
-                    if ((player == null || havePermission && playerPerk.isEnabled())) {
+            for (PlayerPerk playerPerk : entry.getValue()) {
+                Perk perk = perkConfig.getPerks().get(playerPerk.getPerk());
+                if (perk == null) {
+                    continue;
+                }
 
-                        for (var skill : perk.getSkills().entrySet()) {
-                            switch (skill.getValue().getType()) {
-                                case FLY ->
-                                        plugin.addPerkActive(playerPerk.getPlayerUUID(), skill.getValue().getType());
-                            }
-                        }
-                    } else {
-                        for (var skill : perk.getSkills().entrySet()) {
-                            switch (skill.getValue().getType()) {
-                                case FLY ->
-                                        plugin.removePerkActive(playerPerk.getPlayerUUID(), skill.getValue().getType());
-                            }
-                        }
-                    }
+                if (playerPerk.isEnabled() && hasPermission(uuid, perk.getPermission())) {
+                    skillService.markActiveOffline(uuid, perk);
+                } else {
+                    skillService.markInactiveOffline(uuid, perk);
                 }
             }
-            return null;
-        }).execute();
+        }
+    }
+
+    /**
+     * Permission of a player who is not connected here, read from LuckPerms. Defaults to granted
+     * when LuckPerms has nothing loaded for them, which is what FPerk did before.
+     */
+    private boolean hasPermission(UUID uuid, String permission) {
+        if (plugin.getLuckPerms() == null || permission == null) {
+            return true;
+        }
+
+        User user = plugin.getLuckPerms().getUserManager().getUser(uuid);
+        if (user == null) {
+            return true;
+        }
+
+        return user.getNodes().stream()
+                .filter(NodeType.PERMISSION::matches)
+                .map(NodeType.PERMISSION::cast)
+                .filter(Node::getValue)
+                .anyMatch(node -> node.getPermission().equals(permission));
     }
 }
-

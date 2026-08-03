@@ -16,6 +16,7 @@ public class LeaveListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onLeave(PlayerQuitEvent event) {
-        plugin.removeAllPerkActive(event.getPlayer().getUniqueId());
+        // Drops the active skills and the expiry timers still pending for that player.
+        plugin.getSkillService().forget(event.getPlayer().getUniqueId());
     }
 }
